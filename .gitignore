@@ -1,0 +1,78 @@
+# Dependency directories
+node_modules/
+
+# Output build directories
+dist/
+
+# Environment variables file (if you use .env files)
+.env
+
+# Logs
+logs/
+
+# IDE and editor specific files
+.vscode/
+.idea/
+
+# Compiled TypeScript files
+*.js
+*.js.map
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Nest specific
+nest-cli.json
+
+# Dependency directories
+node_modules/
+npm-debug.log
+
+# Output build directories
+build/
+dist/
+
+# Environment variables file (if you use .env files)
+.env
+
+# IDE and editor specific files
+.vscode/
+.idea/
+
+# Compiled and bundled files
+*.js
+*.jsx
+*.css
+*.map
+
+# Local development server files
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+
+# Cache and build files
+.cache/
+.npm/
+yarn.lock
+
+# Logs
+logs/
+
+# Lockfiles
+package-lock.json
+yarn.lock
+
+# Compiled TypeScript files
+*.js
+*.js.map
+
+# Docker
+Dockerfile
+.dockerignore
+
+# React specific
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
