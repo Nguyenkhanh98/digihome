@@ -1,0 +1,12 @@
+import "../../../../shared/assets/js/vendor/jquery-2.2.4.min.js";
+import "../../../../shared/assets/js/vendor/popper.min.js";
+import "../../../../shared/assets/js/vendor/bootstrap.min.js";
+import "../../../../shared/assets/js/easing.min.js";
+import "../../../../shared/assets/js/hoverIntent.js";
+import "../../../../shared/assets/js/superfish.min.js";
+import "../../../../shared/assets/js/jquery.ajaxchimp.min.js";
+import "../../../../shared/assets/js/jquery.magnific-popup.min.js";
+import "../../../../shared/assets/js/owl.carousel.min.js";
+import "../../../../shared/assets/js/jquery.nice-select.min.js";
+import "../../../../shared/assets/js/mail-script.js";
+import "../../../../shared/assets/js/main.js";

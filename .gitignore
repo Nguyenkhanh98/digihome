@@ -2,7 +2,7 @@
 node_modules/
 
 # Output build directories
-dist/
+# dist/
 
 # Environment variables file (if you use .env files)
 .env
@@ -15,8 +15,7 @@ logs/
 .idea/
 
 # Compiled TypeScript files
-*.js
-*.js.map
+# *.js.map
 
 # Docker
 Dockerfile
@@ -30,8 +29,8 @@ node_modules/
 npm-debug.log
 
 # Output build directories
-build/
-dist/
+# build/
+# dist/
 
 # Environment variables file (if you use .env files)
 .env
@@ -41,10 +40,10 @@ dist/
 .idea/
 
 # Compiled and bundled files
-*.js
-*.jsx
-*.css
-*.map
+# *.js
+# *.jsx
+# *.css
+# *.map
 
 # Local development server files
 npm-debug.log
@@ -54,18 +53,18 @@ yarn-error.log*
 # Cache and build files
 .cache/
 .npm/
-yarn.lock
+# yarn.lock
 
 # Logs
 logs/
 
 # Lockfiles
 package-lock.json
-yarn.lock
+# yarn.lock
 
 # Compiled TypeScript files
-*.js
-*.js.map
+# *.js
+# *.js.map
 
 # Docker
 Dockerfile
