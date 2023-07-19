@@ -1,12 +1,9 @@
-import { withMainLayout } from "@/hocs/withLayoutHome";
-import { useEffect } from "react";
-import { Outlet, redirect, useNavigate, useParams } from "react-router-dom";
+import { Outlet, redirect } from "react-router-dom";
 
 const AuthRoute = () => {
-  const WithMainLayout = withMainLayout(Outlet);
   return (
     <>
-      <WithMainLayout />
+    <Outlet/>
     </>
   );
 };

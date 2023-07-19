@@ -1,15 +1,12 @@
-import { appSettingCacheRead } from "@/caches/reads";
-import { useNavigate, useParams, Outlet } from "react-router-dom";
-import { IntlProvider, FormattedMessage, FormattedNumber } from "react-intl";
+import {  useParams, Outlet } from "react-router-dom";
+import { IntlProvider } from "react-intl";
 import {
   useCMSQueryTranslationByLang,
   useLanguagesCMSQuery,
 } from "@/operations/queries/language";
 import { useReadCacheGetLanguageId } from "@/caches/reads/appSetting";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect} from "react";
 import { TLanguage } from "@/operations/types";
-import HomePage from "@/pages/PageHome";
-import { withMainLayout } from "@/hocs/withLayoutHome";
 const LangRouter = () => {
   const languageId = useReadCacheGetLanguageId();
   const params = useParams();
@@ -23,7 +20,7 @@ const LangRouter = () => {
   if (langPath) {
     language = languages.find((lang) => lang.shortName === langPath);
   }
-  const { data, refetch, isSuccess } = useCMSQueryTranslationByLang(
+  const { data, refetch } = useCMSQueryTranslationByLang(
     language ? language.id : "",
     {
       enabled: false, // Enable second query when first query data is available
@@ -44,7 +41,7 @@ const LangRouter = () => {
           locale={langPath || "vi"}
           defaultLocale={"vi"}
         >
-          <Outlet />;
+          <Outlet />
         </IntlProvider>
       )}
     </>

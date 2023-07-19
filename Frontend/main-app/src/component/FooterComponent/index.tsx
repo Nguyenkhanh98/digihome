@@ -15,19 +15,7 @@ export function FooterComponent({ component: Component, ...props }: any) {
                   If you own an Iphone, you’ve probably already worked out how
                   much fun it is to use it to watch movies-it has that.
                 </p>
-                <p className="footer-text">
-                  Copyright &copy;
-                  <script>document.write(new Date().getFullYear());</script> All
-                  rights reserved | This template is made with{" "}
-                  <i className="fa fa-heart-o" aria-hidden="true"></i> by{" "}
-                  <a href="https://colorlib.com" target="_blank">
-                    Colorlib
-                  </a>{" "}
-                  and distributed by{" "}
-                  <a href="https://themewagon.com/" target="_blank">
-                    ThemeWagon
-                  </a>
-                </p>
+                
               </div>
             </div>
             <div className="col-lg-5  col-md-6 col-sm-6">
@@ -35,10 +23,7 @@ export function FooterComponent({ component: Component, ...props }: any) {
                 <h6>Newsletter</h6>
                 <p>Stay update with our latest</p>
                 <div className="" id="mc_embed_signup">
-                  <form
-                    target="_blank"
-                    action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01"
-                    method="get"
+                  <div
                     className="form-inline"
                   >
                     <input
@@ -58,7 +43,7 @@ export function FooterComponent({ component: Component, ...props }: any) {
                       ></input>
                     </div>
                     <div className="info"></div>
-                  </form>
+                  </div>
                 </div>
               </div>
             </div>

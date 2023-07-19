@@ -1,8 +1,8 @@
-import { Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { Theme } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import BGImage from "@/assets/images/img/banner-bg.jpg";
 import backgroundTopbanner from ".";
-const useStyle = makeStyles(
+const useStyle: any = makeStyles(
   (theme: Theme) => ({
     container: {
       background: `url(${BGImage}) center `,

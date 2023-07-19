@@ -5,8 +5,9 @@ import App from "./App.tsx";
 // import "@/assets/js";
 // import "./index.css";
 import { QueryClientProvider, QueryClient } from "react-query";
-import { ThemeProvider } from "@material-ui/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
+import 'react-toastify/dist/ReactToastify.css';
 // import { ThemeProvider } from "@material-ui/styles";
 
 const queryClient = new QueryClient({

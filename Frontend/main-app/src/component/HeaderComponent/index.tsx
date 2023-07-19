@@ -1,12 +1,15 @@
 import LogoMitsubishi from "@/assets/images/icons/Mitsubishi_logo.svg.png";
 import useHeaderStyle from "./style";
 import classnames from "classnames";
-export function FooterComponent({ component: Component, ...props }: any) {
+import { useInjectLang } from "@/hooks/useLang";
+import { useNavigate } from "react-router-dom";
+
+export function FooterComponent() {
   const classes = useHeaderStyle();
-  // const { mutate, isLoading, isError, error, data } = useMutation(signup);
+  const injectLang = useInjectLang();
+  const navigate = useNavigate();
 
-  // console.log(isLoading, isError, error, data);
-
+  console.log(injectLang('/login'),'ssssss');
   return (
     <header id="header">
       <div className="header-top">
@@ -22,8 +25,8 @@ export function FooterComponent({ component: Component, ...props }: any) {
                 { [classes.authCom]: true }
               )}
             >
-              <div className={classes.loginButton}>Sign up</div>
-              <div className={classes.loginButton}>Login</div>
+              <div className={classes.loginButton} onClick={()=>navigate(injectLang('register'))}>Sign up</div>
+              <div className={classes.loginButton} onClick={()=>navigate(injectLang('login'))}>Login</div>
             </div>
           </div>
         </div>
@@ -44,9 +47,7 @@ export function FooterComponent({ component: Component, ...props }: any) {
           </div>
           <nav id="nav-menu-container">
             <ul className="nav-menu">
-              <li className="menu-active">
-                <a href="">Home</a>
-              </li>
+         
               <li>
                 <a href="">About</a>
               </li>

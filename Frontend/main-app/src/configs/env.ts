@@ -11,4 +11,7 @@ export default {
     LANGUAGE_ENDPOINT: env.CMS_LANGUAGE_ENDPOINT || "/api/v1/language",
     TRANSLATE_ENDPOINT: env.CMS_TRANSLATE_ENDPOINT || "/api/v1/fe-translations",
   },
+  MICRO_FRONTEND_URL: {
+    DESIGN_BOARD: env.DESIGN_BOARD_URL || "http://127.0.0.1:3003",
+  },
 };

@@ -2,7 +2,7 @@ import React from "react";
 import HeaderContainer from "@/containters/HeaderContainer";
 import FooterComponent from "@/component/FooterComponent";
 
-export function withMainLayout(
+export function withLayoutDesign(
   WrappedComponent: React.FunctionComponent<any>,
   metadata: any = null
 ) {
@@ -10,9 +10,7 @@ export function withMainLayout(
 
     return (
       <div>
-        <HeaderContainer />
         <WrappedComponent {...props} />
-        <FooterComponent />
       </div>
     );
   };

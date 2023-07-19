@@ -1,10 +1,9 @@
 import useStyle from "./style";
 import classnames from "classnames";
-export function TopBannerComponent({ component: Component, ...props }: any) {
-  // const { mutate, isLoading, isError, error, data } = useMutation(signup);
+import { useCustomNavigate } from "@/hooks/useRedirect";
+export function TopBannerComponent() {
+  const navigate = useCustomNavigate();
   const classes = useStyle();
-  // console.log(isLoading, isError, error, data);
-
   return (
     <section
       className={classnames("banner-area relative", {
@@ -20,13 +19,11 @@ export function TopBannerComponent({ component: Component, ...props }: any) {
           <div className="banner-content col-lg-9 col-md-12 justify-content-center ">
             <h1>Precise concept design for stylish living</h1>
             <p className="text-white mx-auto">
-              If you are looking at blank cassettes on the web, you may be very
-              confused at the difference in price. You may see some for as low
-              as $.17 each. You may be saying to yourself.
+              If you are looking at a place where you can design your dream house. You'll see that's is exactly our goals to help you on the way make it come true. 
             </p>
-            <a href="#" className="primary-btn header-btn text-uppercase mt-10">
+            <div className="primary-btn header-btn text-uppercase mt-10" onClick={() =>navigate('design-board')}>
               Get Started
-            </a>
+            </div>
           </div>
         </div>
       </div>

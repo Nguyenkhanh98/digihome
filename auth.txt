@@ -1,0 +1,16 @@
+/auth 
+- register
+- login
+
+/model: CRUD
+mô tả: là các thực thể: như ghế, của sổ tủ lạnh, sẽ bao gồm hình ảnh thumbnail và 1 field 'structure'  (text/json) để lưu trữ thông tin 3d.
+
+/template : CRUD
+Mô tả: là template đc admin build sẵn để user có thể dùng các thực thể trong đó và build: ví dụ template sẽ có 20model.
+
+/design: CRUD
+Mô tả: Là các bản design được user tạo ra và lưu. cần có field 'structure' (text/json) để lưu trữ .
+
+- role : + superadmin : full access
++ user: CRUD design, share design  via public url
++ anonymous:   view design via public url

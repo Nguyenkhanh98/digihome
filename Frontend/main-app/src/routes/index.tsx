@@ -7,14 +7,16 @@ import {
 } from "react-router-dom";
 
 // import NotFound from "pages/404";
-import SignupPage from "@/pages/PageSigup";
-import SigninPage, { PageSignin } from "@/pages/PageSignin";
+import SignupPage from "@/pages/PageSignup";
+import SigninPage from "@/pages/PageSignin";
 import HomePage from "@/pages/PageHome";
 
 import RootRoute, { rootLoader } from "@/routes/root";
 import AuthRoute, { authRouteLoader } from "@/routes/auth";
 import LangRoute, { langRouteLoader } from "@/routes/lang";
 import PublicRoute, { publicRouteLoader } from "@/routes/public";
+import PrivateRoute, {privateRouterLoader} from "./privateRouter";
+import DesignBoardPage from "@/pages/DesignBoard";
 // import Maintenance from 'pages/Maintenance';
 
 const isSetTimeOut = false;
@@ -59,11 +61,15 @@ const RouterApp = (props: any) => {
                 // },
                 {
                   path: "login",
-                  element: <PageSignin />,
+                  element: <SigninPage />,
+                },
+                 {
+                  path: "register",
+                  element: <SignupPage />,
                 },
                 {
                   path: "logout",
-                  element: <PageSignin />,
+                  element: <SigninPage />,
                   // loader: redirectIfUser,
                 },
               ],
@@ -72,6 +78,17 @@ const RouterApp = (props: any) => {
               path: "",
               element: <HomePage />,
             },
+            {
+             
+              element: <PrivateRoute />,
+              loader: privateRouterLoader,
+              children: [
+                {
+                  path: "design-board",
+                  element: <DesignBoardPage />,
+                },
+              ]
+            }
           ],
         },
       ],

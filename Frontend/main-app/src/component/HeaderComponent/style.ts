@@ -1,7 +1,7 @@
-import { Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material";
 
-const useStyle = makeStyles(
+const useStyle: any = makeStyles(
   (theme: Theme) => ({
     loginButton: {
       color: "white",
