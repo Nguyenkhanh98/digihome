@@ -26,7 +26,7 @@
     "grunt-subgrunt": "^1.2.0",
     "grunt-typedoc": "^0.2.4",
     "grunt-typescript": "^0.8.0",
-    "http-server": "^14.1.1",
+    "live-server": "^1.2.2",
     "matchdep": "^1.0.1"
   },
   "repository": {
@@ -35,7 +35,7 @@
   },
   "scripts": {
     "build": "browserify src/blueprint3d.js > example/js/blueprint3d.js --verbose",
-    "start:local": "http-server ./example -p 3003"
+    "start:local": "cd example && live-server --port=3003"
   },
   "author": ""
 }

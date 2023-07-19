@@ -8,29 +8,72 @@ import React, {
 import { useMutation } from "react-query";
 import eventBus from "@/services/eventBus";
 import DesignBoardComponent from "@/component/DesignBoardComponent";
+import { useParams } from "react-router-dom";
+import { EACTION } from "@/configs/action";
+import { Env } from "@/configs";
+
+interface IAction {
+  action: EACTION;
+  data: any;
+}
 export function DesignBoardContainer() {
+  const params = useParams();
+  const [isLoadingIframe, setIsLoadingIframe] = useState(true);
+  const iframeRef: any = useRef(null);
 
-   useEffect(() => {
+  const handleIframeLoad = () => {
+    setIsLoadingIframe(false);
+    console.log("Iframe content loaded successfully!");
+    sendDataToIframe();
+  };
+  const handleIframeLoadStart = () => {
+    setIsLoadingIframe(true);
+    console.log("Iframe loading has started.");
+  };
+
+  useEffect(() => {
     // Listen for a custom event
-    const eventListener = (data: any) => {
-      console.log('React App received event:', data);
+
+    const handler = (event: any) => {
+      const origin = event.origin;
+      if (origin !== Env.MICRO_FRONTEND_URL.DESIGN_BOARD) {
+        return;
+      }
+
+      const { action, data }: IAction = event.data;
+      if (!Object.values(EACTION).includes(action)) {
+        return;
+      }
+      switch (action) {
+        case EACTION.RETURN_PREVIOUS:
+          history.back();
+          break;
+
+        default:
+          break;
+      }
     };
-
-    eventBus.on('customEvent', eventListener);
-
-    // Clean up the event listener when the component unmounts
+    window.addEventListener("message", handler);
     return () => {
-      eventBus.off('customEvent', eventListener);
+      window.removeEventListener("message", handler);
     };
   }, []);
-    const handleClick = () => {
-    // Emit a custom event
-    eventBus.emit('callStatic', { message: 'Hello from React App!' });
+
+  const sendDataToIframe = () => {
+    const data = {
+      message: "Hello from the parent component!",
+      action: "HELLO",
+    };
+    iframeRef.current?.contentWindow?.postMessage(data, "*");
   };
 
   return (
     <>
-    <DesignBoardComponent onClick={handleClick}/>
+      <DesignBoardComponent
+        onLoadStart={handleIframeLoadStart}
+        onLoad={handleIframeLoad}
+        iframeRef={iframeRef}
+      />
     </>
   );
 }

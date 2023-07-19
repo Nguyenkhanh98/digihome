@@ -1,72 +1,82 @@
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import { useNavigate } from "react-router-dom";
+import { useInjectLang } from "@/hooks/useLang";
+import BGImg from "@/assets/images/img/login_bg.jpg";
+import useStyle from "./style";
 
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import { useNavigate } from 'react-router-dom';
-import { useInjectLang } from '@/hooks/useLang';
-import BGImg from '@/assets/images/img/login_bg.jpg';
-import useStyle from './style';
+export function SignupComponent({ handleSubmit }: any) {
+  const navigate = useNavigate();
+  const injectLang = useInjectLang();
 
-export function SignupComponent({handleSubmit}: any) {
-    const navigate = useNavigate();
-    const injectLang = useInjectLang();
-
-    const classes = useStyle();
-    return (
-    <Grid container component="main" sx={{ height: '100vh' }}>
-        <CssBaseline />
-        <Grid
-
-        
-          item
-          xs={false}
-          sm={4}
-          md={7}
-          sx={{
-            backgroundImage: `url(${BGImg})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundColor: (t) =>
-              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+  const classes = useStyle();
+  return (
+    <Grid container component="main" sx={{ height: "100vh" }}>
+      <CssBaseline />
+      <Grid
+        item
+        xs={false}
+        sm={4}
+        md={7}
+        sx={{
+          backgroundImage: `url(${BGImg})`,
+          backgroundRepeat: "no-repeat",
+          backgroundColor: (t) =>
+            t.palette.mode === "light"
+              ? t.palette.grey[50]
+              : t.palette.grey[900],
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+        style={{ position: "relative" }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            right: "50%",
+            top: "10%",
+            transform: "translate(50%, 10%)",
+            fontSize: "25px",
+            color: "white",
+            fontFamily: "cursive",
           }}
-          style={{position: 'relative'}}>
-        <div style={{position: 'absolute',right:'50%', top:'10%',
-               transform: 'translate(50%, 10%)',
-                fontSize:'25px',
-                color: 'white',
-                fontFamily:'cursive',
-            }}>
-            Let's your dream house come true!
+        >
+          Let's your dream house come true!
         </div>
-        </Grid>
-   
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          <Box
-            sx={{
-              my: 8,
-              mx: 4,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+      </Grid>
+
+      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        <Box
+          sx={{
+            my: 8,
+            mx: 4,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box
+            component="form"
+            noValidate
+            onSubmit={handleSubmit}
+            sx={{ mt: 3 }}
+          >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -112,7 +122,9 @@ export function SignupComponent({handleSubmit}: any) {
               </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
+                  control={
+                    <Checkbox value="allowExtraEmails" color="primary" />
+                  }
                   label="I want to receive inspiration, marketing promotions and updates via email."
                 />
               </Grid>
@@ -127,16 +139,26 @@ export function SignupComponent({handleSubmit}: any) {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <div className={classes.link} onClick={()=> navigate(injectLang('login'))}>
+                <div
+                  className={classes.link}
+                  onClick={() => navigate(injectLang("login"))}
+                >
                   Already have an account? Sign in
                 </div>
               </Grid>
             </Grid>
           </Box>
+          <Box style={{ marginTop: 40 }}>
+            <Button
+              variant="contained"
+              onClick={() => navigate(injectLang(""))}
+            >
+              Back home
+            </Button>
           </Box>
-        </Grid>
-      </Grid> 
-         
+        </Box>
+      </Grid>
+    </Grid>
   );
 }
 

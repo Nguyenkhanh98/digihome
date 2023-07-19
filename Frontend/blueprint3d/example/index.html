@@ -7,32 +7,35 @@
   <link href="css/bootstrap.css" rel="stylesheet">
   <link href="css/example.css" rel="stylesheet">
 
+
   <script src="js/three.min.js"></script>
   <script src="js/blueprint3d.js"></script>
 
   <script src="js/jquery.js"></script>
   <script src="js/bootstrap.js"></script>
 
-  <script src="js/items.js"></script>
-  <script src="js/example.js"></script>
   <script src="js/eventBus.js"></script>
 
+  <script src="js/items.js"></script>
+  <script src="js/example.js"></script>
+
   <script>
-    const eventBus = mitt();
-    function emitEvent() {
-      eventBus.emit('customEvent', { message: 'Hello from Static App!' });
-    }
-    emitEvent()
-    eventBus.on('callStatic', function (data) {
-      console.log('Static App received event:', data);
-    });
-    $(document).ready(function () {
-      // When the DOM is ready, attach the click event handler
-      $('#return').click(function () {
-        // Your code to be executed when the button is clicked
-        eventBus.emit('customEvent', { message: 'Hello from Static App!' });
-      });
-    });
+    // const eventBus = mitt();
+    // function emitEvent() {
+    //   eventBus.emit('customEvent', { message: 'Hello from Static App!' });
+    // }
+    // window.parent.postMessage("Hello world", "http://localhost:5173")
+    // emitEvent()
+    // eventBus.on('callStatic', function (data) {
+    //   console.log('Static App received event:', data);
+    // });
+    // $(document).ready(function () {
+    //   // When the DOM is ready, attach the click event handler
+    //   $('#return').click(function () {
+    //     // Your code to be executed when the button is clicked
+    //     eventBus.emit('customEvent', { message: 'Hello from Static App!' });
+    //   });
+    // });
   </script>
 </head>
 
@@ -41,123 +44,156 @@
   <div class="container-fluid">
     <div class="row main-row">
       <!-- Left Column -->
-      <div class="col-xs-3 sidebar">
 
-        <div id="return">
-          Return
+      <div class="col-xs-3 sidebar" style="padding: 0">
+
+        <div class="left-nav" id="return">
+          <svg baseProfile="tiny" height="18px" id="Layer_1" version="1.2" viewBox="0 0 24 24" width="18px"
+            fill="#616161" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink">
+            <g>
+              <path
+                d="M19.164,19.547c-1.641-2.5-3.669-3.285-6.164-3.484v1.437c0,0.534-0.208,1.036-0.586,1.414   c-0.756,0.756-2.077,0.751-2.823,0.005l-6.293-6.207C3.107,12.523,3,12.268,3,11.999s0.107-0.524,0.298-0.712l6.288-6.203   c0.754-0.755,2.073-0.756,2.829,0.001C12.792,5.463,13,5.965,13,6.499v1.704c4.619,0.933,8,4.997,8,9.796v1   c0,0.442-0.29,0.832-0.714,0.958c-0.095,0.027-0.19,0.042-0.286,0.042C19.669,19.999,19.354,19.834,19.164,19.547z M12.023,14.011   c2.207,0.056,4.638,0.394,6.758,2.121c-0.768-3.216-3.477-5.702-6.893-6.08C11.384,9.996,11,10,11,10V6.503l-5.576,5.496l5.576,5.5   V14C11,14,11.738,14.01,12.023,14.011z" />
+            </g>
+          </svg>
+          <small style="font-size: 14px;">
+            Back
+          </small>
         </div>
+        <hr style="margin-top: 0;" />
+        <div class="tool-bar" style=" padding:0 20px">
+          <div class="tool-bar-template form-group">
+            <label for="sel1">Template</label>
+            <select class="form-control " id="sel1">
+              <option>Original</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+            </select>
+          </div>
+          <hr />
+          <!-- Main Navigation -->
+          <ul class="nav nav-sidebar tool-bar-control">
+            <li id="floorplan_tab"><a href="#">
+                Floorplan
+              </a></li>
+            <li id="design_tab"><a href="#">
+                Design
+              </a></li>
+            <li id="items_tab"><a href="#">
+                Models
+              </a></li>
+          </ul>
+          <hr />
 
-        <div>
-          Template: A
-        </div>
-        <!-- Main Navigation -->
-        <ul class="nav nav-sidebar">
-          <li id="floorplan_tab"><a href="#">
-              Edit Floorplan
-              <span class="glyphicon glyphicon-chevron-right pull-right"></span>
-            </a></li>
-          <li id="design_tab"><a href="#">
-              Design
-              <span class="glyphicon glyphicon-chevron-right pull-right"></span>
-            </a></li>
-          <li id="items_tab"><a href="#">
-              Add Items
-              <span class="glyphicon glyphicon-chevron-right pull-right"></span>
-            </a></li>
-        </ul>
-        <hr />
+          <div id="context-menu">
+            <div style="margin: 0 20px">
+              <span id="context-menu-name" class="lead"></span>
+              <br /><br />
+              <button class="btn btn-block btn-danger" id="context-menu-delete">
+                <span class="glyphicon glyphicon-trash"></span>
+                Delete Item
+              </button>
+              <br />
+              <div class="panel panel-default">
+                <div class="panel-heading">Adjustment</div>
+                <div class="panel-body" style="color: #333333">
 
-        <!-- Context Menu -->
-        <div id="context-menu">
-          <div style="margin: 0 20px">
-            <span id="context-menu-name" class="lead"></span>
-            <br /><br />
-            <button class="btn btn-block btn-danger" id="context-menu-delete">
-              <span class="glyphicon glyphicon-trash"></span>
-              Delete Item
-            </button>
-            <br />
+                  <div class="form form-horizontal" class="lead">
+                    <div class="form-group">
+                      <label class="col-sm-5 control-label">
+                        Width
+                      </label>
+                      <div class="col-sm-6">
+                        <input type="number" class="form-control" id="item-width">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-5 control-label">
+                        Depth
+                      </label>
+                      <div class="col-sm-6">
+                        <input type="number" class="form-control" id="item-depth">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-5 control-label">
+                        Height
+                      </label>
+                      <div class="col-sm-6">
+                        <input type="number" class="form-control" id="item-height">
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="col-sm-5 control-label">
+                        Color
+                      </label>
+                      <div class="col-sm-6">
+                        <input type="color" id="color-selector" style="width:60%">
+                        <small id="color-display" style="font-size:70%;width:30%;display: inline-flex;"></small>
+                      </div>
+                    </div>
+                  </div>
+                  <small><span class="text-muted">Measurements in inches.</span></small>
+                </div>
+              </div>
+
+              <label><input type="checkbox" id="fixed" /> Lock in place</label>
+              <br /><br />
+            </div>
+          </div>
+
+          <!-- Floor textures -->
+          <div id="floorTexturesDiv" style="display:none; padding: 0 20px">
             <div class="panel panel-default">
-              <div class="panel-heading">Adjust Size</div>
+              <div class="panel-heading">Adjust Floor</div>
               <div class="panel-body" style="color: #333333">
 
-                <div class="form form-horizontal" class="lead">
-                  <div class="form-group">
-                    <label class="col-sm-5 control-label">
-                      Width
-                    </label>
-                    <div class="col-sm-6">
-                      <input type="number" class="form-control" id="item-width">
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="col-sm-5 control-label">
-                      Depth
-                    </label>
-                    <div class="col-sm-6">
-                      <input type="number" class="form-control" id="item-depth">
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="col-sm-5 control-label">
-                      Height
-                    </label>
-                    <div class="col-sm-6">
-                      <input type="number" class="form-control" id="item-height">
-                    </div>
-                  </div>
+                <div class="col-sm-6" style="padding: 3px">
+                  <a href="#" class="thumbnail texture-select-thumbnail"
+                    texture-url="rooms/textures/light_fine_wood.jpg" texture-stretch="false" texture-scale="300">
+                    <img alt="Thumbnail light fine wood" src="rooms/thumbnails/thumbnail_light_fine_wood.jpg" />
+                  </a>
                 </div>
-                <small><span class="text-muted">Measurements in inches.</span></small>
-              </div>
-            </div>
-
-            <label><input type="checkbox" id="fixed" /> Lock in place</label>
-            <br /><br />
-          </div>
-        </div>
-
-        <!-- Floor textures -->
-        <div id="floorTexturesDiv" style="display:none; padding: 0 20px">
-          <div class="panel panel-default">
-            <div class="panel-heading">Adjust Floor</div>
-            <div class="panel-body" style="color: #333333">
-
-              <div class="col-sm-6" style="padding: 3px">
-                <a href="#" class="thumbnail texture-select-thumbnail" texture-url="rooms/textures/light_fine_wood.jpg"
-                  texture-stretch="false" texture-scale="300">
-                  <img alt="Thumbnail light fine wood" src="rooms/thumbnails/thumbnail_light_fine_wood.jpg" />
-                </a>
               </div>
             </div>
           </div>
+
+
+          <div id="wallTextures" style="display:none; padding: 0 20px">
+            <div class="panel panel-default">
+              <div class="panel-heading">Adjust Wall</div>
+              <div class="panel-body" style="color: #333333">
+                <div class="col-sm-6" style="padding: 3px">
+                  <a href="#" class="thumbnail texture-select-thumbnail" texture-url="rooms/textures/marbletiles.jpg"
+                    texture-stretch="false" texture-scale="300">
+                    <img alt="Thumbnail marbletiles" src="rooms/thumbnails/thumbnail_marbletiles.jpg" />
+                  </a>
+                </div>
+                <div class="col-sm-6" style="padding: 3px">
+                  <a href="#" class="thumbnail texture-select-thumbnail" texture-url="rooms/textures/wallmap_yellow.png"
+                    texture-stretch="true" texture-scale="">
+                    <img alt="Thumbnail wallmap yellow" src="rooms/thumbnails/thumbnail_wallmap_yellow.png" />
+                  </a>
+                </div>
+                <div class="col-sm-6" style="padding: 3px">
+                  <a href="#" class="thumbnail texture-select-thumbnail" texture-url="rooms/textures/light_brick.jpg"
+                    texture-stretch="false" texture-scale="100">
+                    <img alt="Thumbnail light brick" src="rooms/thumbnails/thumbnail_light_brick.jpg" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+
+        <!-- Context Menu -->
+
 
         <!-- Wall Textures -->
-        <div id="wallTextures" style="display:none; padding: 0 20px">
-          <div class="panel panel-default">
-            <div class="panel-heading">Adjust Wall</div>
-            <div class="panel-body" style="color: #333333">
-              <div class="col-sm-6" style="padding: 3px">
-                <a href="#" class="thumbnail texture-select-thumbnail" texture-url="rooms/textures/marbletiles.jpg"
-                  texture-stretch="false" texture-scale="300">
-                  <img alt="Thumbnail marbletiles" src="rooms/thumbnails/thumbnail_marbletiles.jpg" />
-                </a>
-              </div>
-              <div class="col-sm-6" style="padding: 3px">
-                <a href="#" class="thumbnail texture-select-thumbnail" texture-url="rooms/textures/wallmap_yellow.png"
-                  texture-stretch="true" texture-scale="">
-                  <img alt="Thumbnail wallmap yellow" src="rooms/thumbnails/thumbnail_wallmap_yellow.png" />
-                </a>
-              </div>
-              <div class="col-sm-6" style="padding: 3px">
-                <a href="#" class="thumbnail texture-select-thumbnail" texture-url="rooms/textures/light_brick.jpg"
-                  texture-stretch="false" texture-scale="100">
-                  <img alt="Thumbnail light brick" src="rooms/thumbnails/thumbnail_light_brick.jpg" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+
       </div>
 
       <!-- Right Column -->
@@ -170,7 +206,7 @@
             <a href="#" class="btn btn-default btn-sm" id="new">
               New Plan
             </a>
-            <a href="#" class="btn btn-default btn-sm" id="saveFile">
+            <a href="#" class="btn btn-default btn-sm" id="saveDesign">
               Save Plan
             </a>
 
