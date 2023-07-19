@@ -15,7 +15,7 @@ import BGImg from "@/assets/images/img/login_bg.jpg";
 import { useNavigate } from "react-router-dom";
 import { useInjectLang } from "@/hooks/useLang";
 import useStyle from "./style";
-export function LoginComponent({ handleSubmit }: any) {
+export function LoginComponent({ handleSubmit,errors }: any) {
   const classes = useStyle();
   const navigate = useNavigate();
   const injectLang = useInjectLang();
@@ -84,6 +84,8 @@ export function LoginComponent({ handleSubmit }: any) {
               name="email"
               autoComplete="email"
               autoFocus
+              error={errors.email}
+
             />
             <TextField
               margin="normal"
@@ -94,6 +96,7 @@ export function LoginComponent({ handleSubmit }: any) {
               type="password"
               id="password"
               autoComplete="current-password"
+              error={errors.password}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}

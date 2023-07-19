@@ -4,7 +4,8 @@ import { AppConfig } from "@/configs";
 import { useEffect } from "react";
 import { useLanguagesCMSQuery } from "@/operations/queries/language";
 import { TLanguage } from "@/operations/types";
-
+import BackDrop from "@/component/BackDrop";
+  import { ToastContainer } from 'react-toastify';
 const RootRoute = () => {
   const navigate = useNavigate();
   const params = useParams();
@@ -34,8 +35,9 @@ const RootRoute = () => {
 
   return (
     <>
-      {isError && <>isError</>}
       <Outlet />
+      <BackDrop/>
+      <ToastContainer/>
     </>
   );
 };

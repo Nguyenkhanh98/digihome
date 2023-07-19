@@ -11,6 +11,7 @@ function createCMSAPIInstance() {
       headers: {
         "Content-Type": "application/json", // Set default headers
       },
+      timeout: 8 * 1000,
     });
   }
   return CMSAPIInstance;
@@ -23,6 +24,7 @@ function createAPIInstance() {
       headers: {
         "Content-Type": "application/json", // Set default headers
       },
+      timeout: 8 * 1000,
     });
   }
   return APIInstance;

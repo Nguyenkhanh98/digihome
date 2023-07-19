@@ -1,9 +1,17 @@
-import { apiInstance } from "@/configs";
+import { makeRequest } from "@/configs";
+import { Config } from "@/configs";
 
-const userAPIService = {
-  login: async () => {
-    return apiInstance.login();
-  },
+export const login = async (payload: any) => {
+  return makeRequest.API({
+    method: "POST",
+    url: Config.API_DATA.USER_SIGN_IN_ENDPOINT,
+    data: payload,
+  });
 };
-
-export default userAPIService;
+export const register = (payload: any) => {
+  return makeRequest.API({
+    method: "POST",
+    url: Config.API_DATA.USER_SIGN_UP_ENDPOINT,
+    data: payload,
+  });
+};

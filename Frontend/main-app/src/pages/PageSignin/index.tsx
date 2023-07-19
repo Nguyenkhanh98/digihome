@@ -1,35 +1,56 @@
 import LoginComponent from "@/component/Login";
 import  {
-  useEffect,
+  useEffect, useState,
 } from "react";
 
 import * as React from 'react';
 
-// import { signup } from "@/operations/mutations/user";
+import { userSigninMutation } from "@/operations/mutations/user";
 
-// import { useMutation } from "react-query";
+import { useMutation } from "react-query";
+import {isValidEmail} from "@/helpers/string";
+import {useWriteCacheAppContext} from "@/caches/writes/appContext";
+  import { toast } from 'react-toastify';
 function PageSignin() {
-  // const { mutate, isLoading, isError, error, data } = useMutation(signup);
-  // console.log(isLoading, isError, error, data);
-  console.log("xxx");
-
-  useEffect(() => {
-    console.log("SSSSSSSSSS");
-    // mutate({});
-  }, []);
+  const { mutate} = useMutation(userSigninMutation);
+  const updateAppContext = useWriteCacheAppContext();
+  const [errors, setErrors] = useState({});
+  // useEffect(()=>{
+  //   if(data) {
+  //   updateAppContext({backdrop: false});
+  //   }
+  // }, [data]);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+      event.preventDefault();
+
+      const data = new FormData(event.currentTarget);
+
+      const email = data.get('email')?.toString();
+      const password = data.get('password')?.toString();
+      if (!email || !password || !isValidEmail(email) ) {
+        setErrors({email: !email || !isValidEmail(email)  ,password: !password })
+      } else {
+         updateAppContext({backdrop: true});
+        setErrors({});
+         mutate({email,password},{
+          onError: ()=>{
+             toast.error('Some thing occurred. Please try again');
+          },
+          onSuccess: ()=>{
+             toast.success('Login success, Welcome back!');
+          },
+          onSettled: ()=> {
+             updateAppContext({backdrop: false})
+          }
+         });
+      }
+
   };
 
   return (
     <>
-    <LoginComponent handleSubmit ={handleSubmit}/>
+    <LoginComponent handleSubmit ={handleSubmit} errors={errors}/>
     </>
   );
 }

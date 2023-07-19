@@ -6,17 +6,18 @@ import React, {
   useMemo,
 } from "react";
 import { useMutation } from "react-query";
-import eventBus from "@/services/eventBus";
+// import eventBus from "@/services/eventBus";
 import DesignBoardComponent from "@/component/DesignBoardComponent";
 import { useParams } from "react-router-dom";
 import { EACTION } from "@/configs/action";
 import { Env } from "@/configs";
-
+import { useCustomNavigate } from "@/hooks/useRedirect";
 interface IAction {
   action: EACTION;
   data: any;
 }
 export function DesignBoardContainer() {
+  const navigate = useCustomNavigate();
   const params = useParams();
   const [isLoadingIframe, setIsLoadingIframe] = useState(true);
   const iframeRef: any = useRef(null);
@@ -46,7 +47,7 @@ export function DesignBoardContainer() {
       }
       switch (action) {
         case EACTION.RETURN_PREVIOUS:
-          history.back();
+          navigate('')
           break;
 
         default:

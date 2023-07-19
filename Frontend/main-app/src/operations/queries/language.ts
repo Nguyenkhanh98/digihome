@@ -1,5 +1,3 @@
-import { makeRequest } from "@/configs";
-import { CMS_API_DATA } from "@/configs/config";
 import { useQuery } from "react-query";
 import { languageAPICMSService } from "@/services/cms";
 import { VAR_LANGUAGE_CMS, VAR_TRANSLATETION_CMS } from "../vars";
@@ -19,7 +17,3 @@ export function useCMSQueryTranslationByLang(langId: string, options = {}) {
     options
   );
 }
-// export function useLanguagesCMSQuery = useQuery(
-//   VAR_LANGUAGE_CMS,
-//   languageAPICMSService.getLanguages
-// );

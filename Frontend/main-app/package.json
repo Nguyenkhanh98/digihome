@@ -7,6 +7,8 @@
     "start:blueprint3d": "cd ../blueprint3d && yarn start:local",
     "dev": "vite",
     "start:all": "concurrently  \"yarn dev\" \"yarn start:blueprint3d\" ",
+    "install:3d": "cd ../blueprint3d && npm install --force",
+    "install:all": "yarn install && yarn install:3d",
     "build": "vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
