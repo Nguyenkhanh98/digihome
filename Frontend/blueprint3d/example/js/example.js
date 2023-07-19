@@ -91,6 +91,7 @@ var ContextMenu = function(blueprint3d) {
   var selectedItem;
   var three = blueprint3d.three;
 
+
   function init() {
     $("#context-menu-delete").click(function(event) {
         selectedItem.remove();
@@ -100,6 +101,7 @@ var ContextMenu = function(blueprint3d) {
     three.itemUnselectedCallbacks.add(itemUnselected);
 
     initResize();
+    initChangeColor();
 
     $("#fixed").click(function() {
         var checked = $(this).prop('checked');
@@ -117,7 +119,6 @@ var ContextMenu = function(blueprint3d) {
 
   function itemSelected(item) {
     selectedItem = item;
-
     $("#context-menu-name").text(item.metadata.itemName);
 
     $("#item-width").val(cmToIn(selectedItem.getWidth()).toFixed(0));
@@ -137,10 +138,21 @@ var ContextMenu = function(blueprint3d) {
     );
   }
 
+  function changeColor() {
+    var selectedColor = $(this).val();
+    $("#color-display").text(selectedColor);
+    selectedItem.setColor(selectedColor);
+  }
+
   function initResize() {
     $("#item-height").change(resize);
     $("#item-width").change(resize);
     $("#item-depth").change(resize);
+  }
+
+  
+  function initChangeColor() {
+    $('#color-selector').on('input',changeColor);
   }
 
   function itemUnselected() {
@@ -485,10 +497,7 @@ var mainControls = function(blueprint3d,eventBus) {
     reader.readAsText(files[0]);
   }
   
-  function changeColor (){
-    var selectedColor = $(this).val();
-    $('#color-display').text(selectedColor);
-  }
+
   function saveDesign() {
     var data = blueprint3d.model.exportSerialized();
     var a = window.document.createElement('a');
@@ -516,7 +525,6 @@ var mainControls = function(blueprint3d,eventBus) {
     $("#saveDesign").click(saveToDB);
     $("#saveFile").click(saveDesign);
     $("#return").click(returnPrevious);
-    $('#color-selector').on('input',changeColor);
   }
 
   init();

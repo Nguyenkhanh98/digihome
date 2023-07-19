@@ -478,13 +478,16 @@ var BP3D;
                 this.castShadow = true;
                 this.receiveShadow = false;
                 this.geometry = geometry;
-                this.material = material;
                 if (position) {
                     this.position.copy(position);
                     this.position_set = true;
                 }
                 else {
                     this.position_set = false;
+                }
+
+                if (metadata.color){
+                    this.material.materials.forEach((material, index)=> material.color= metadata.color[index])
                 }
                 // center in its boundingbox
                 this.geometry.computeBoundingBox();
@@ -510,6 +513,14 @@ var BP3D;
                 var y = height / this.getHeight();
                 var z = depth / this.getDepth();
                 this.setScale(x, y, z);
+            };
+
+            Item.prototype.setColor = function (color) {
+                this.material.materials.forEach(function (material) {
+                    // TODO_Ekki emissive doesn't exist anymore?
+                    material.color.set(color);
+                });
+                this.scene.needsUpdate = true;
             };
             /** */
             Item.prototype.setScale = function (x, y, z) {
@@ -2497,6 +2508,7 @@ var BP3D;
                 var scope = this;
                 var loaderCallback = function (geometry, materials) {
                     var item = new (BP3D.Items.Factory.getClass(itemType))(scope.model, metadata, geometry, new THREE.MeshFaceMaterial(materials), position, rotation, scale);
+                    console.log(item,'===============item',materials)
                     item.fixed = fixed || false;
                     scope.items.push(item);
                     scope.add(item);
@@ -2563,7 +2575,8 @@ var BP3D;
                         scale_x: object.scale.x,
                         scale_y: object.scale.y,
                         scale_z: object.scale.z,
-                        fixed: object.fixed
+                        fixed: object.fixed,
+                        color: object.material.materials.map(material =>material.color)
                     };
                 }
                 var room = {
@@ -2582,7 +2595,8 @@ var BP3D;
                         itemName: item.item_name,
                         resizable: item.resizable,
                         itemType: item.item_type,
-                        modelUrl: item.model_url
+                        modelUrl: item.model_url,
+                        color: item.color
                     };
                     var scale = new THREE.Vector3(item.scale_x, item.scale_y, item.scale_z);
                     _this.scene.addItem(item.item_type, item.model_url, metadata, position, item.rotation, scale, item.fixed);
@@ -4428,7 +4442,9 @@ var BP3D;
             function init() {
                 three.itemSelectedCallbacks.add(itemSelected);
                 three.itemUnselectedCallbacks.add(itemUnselected);
+
             }
+
             function resetSelectedItem() {
                 selectedItem = null;
                 if (activeObject) {
@@ -4581,6 +4597,7 @@ var BP3D;
             this.wallClicked = $.Callbacks(); // wall
             this.floorClicked = $.Callbacks(); // floor
             this.nothingClicked = $.Callbacks();
+            this.setColorItem;
             function init() {
                 THREE.ImageUtils.crossOrigin = "";
                 domElement = scope.element.get(0); // Container
