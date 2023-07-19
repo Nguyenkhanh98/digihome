@@ -5,4 +5,5 @@ export type TModel = {
   data: string;
   status: string;
   metadata: string;
+  type: string;
 };
