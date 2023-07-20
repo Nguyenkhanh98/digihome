@@ -4,9 +4,12 @@
  */
 
 var ACTION= {
-  LOAD_DESIGN:'LOAD_DESIGN'
+  LOAD_DESIGN:'LOAD_DESIGN',
+  SAVE_DESIGN:'SAVE_DESIGN',
 }
-
+var ACTION_FROM_PARENT= {
+  LOAD_DESIGN_FROM_PARENT:'LOAD_DESIGN_CLIENT'
+}
 var CameraButtons = function(blueprint3d) {
 
   var orbitControls = blueprint3d.three.controls;
@@ -483,8 +486,6 @@ var ViewerFloorplanner = function(blueprint3d) {
 
 var mainControls = function(blueprint3d,eventBus) {
 
-
-
   var blueprint3d = blueprint3d;
 
   function newDesign() {
@@ -496,13 +497,14 @@ var mainControls = function(blueprint3d,eventBus) {
     var reader  = new FileReader();
     reader.onload = function(event) {
         var data = event.target.result;
+    console.log(data,"datadatadatadatadata");
+
         blueprint3d.model.loadSerialized(data);
     }
     reader.readAsText(files[0]);
   }
   
     function loadDesignV2() {
-      console.log('SSSSSSSSSSSSSSSSSSSSSSSSSSs');
       eventBus.emit(ACTION.LOAD_DESIGN);
   }
 
@@ -517,10 +519,27 @@ var mainControls = function(blueprint3d,eventBus) {
     document.body.removeChild(a)
   }
 
+
   function saveToDB() {
-    var data = blueprint3d.model.exportSerialized();
-    console.log(data,'datadatadatadata')
-    eventBus.emit({event: 'temp',data});
+    let dataURL =blueprint3d.three.dataUrl();
+    const tempImage = new Image();
+    tempImage.src = dataURL;
+
+    const cropCanvas = document.createElement('canvas');
+    cropCanvas.width = 800; 
+    cropCanvas.height = 800;
+    const ctx = cropCanvas.getContext('2d');
+
+    tempImage.onload = function () {
+      const centerX = (tempImage.width - cropCanvas.width) / 2;
+      const centerY = (tempImage.height - cropCanvas.height) / 2;
+      ctx.drawImage(tempImage, centerX, centerY, cropCanvas.width, cropCanvas.height, 0, 0, cropCanvas.width, cropCanvas.height);
+      const centerAreaDataURL = cropCanvas.toDataURL();
+      var data = blueprint3d.model.exportSerialized();
+      eventBus.emit(ACTION.SAVE_DESIGN,{data, thumbnail: centerAreaDataURL});
+    };
+
+
   }
 
   function returnPrevious() {
@@ -540,9 +559,14 @@ var mainControls = function(blueprint3d,eventBus) {
 }
 
 var handlerActionFromParent = function(blueprint3d,eventBus){
-  console.log('----handlerActionFromParent---')
-  eventBus.on('HELLO',()=>{
-    console.log('ACTION HELLO FROM PARENT')
+  function loadDesign(file) {
+    console.log('ON ',ACTION_FROM_PARENT.LOAD_DESIGN_FROM_PARENT, file.data);
+    blueprint3d.model.loadSerialized(file.data);
+  }
+
+
+  eventBus.on(ACTION_FROM_PARENT.LOAD_DESIGN_FROM_PARENT,(data)=>{
+    loadDesign(data.data)
   });
 }
 /*

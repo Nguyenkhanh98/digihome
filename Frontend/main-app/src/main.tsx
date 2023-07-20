@@ -4,10 +4,11 @@ import App from "./App.tsx";
 // import "@/assets/css";
 // import "@/assets/js";
 // import "./index.css";
-import { QueryClientProvider, QueryClient } from "react-query";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
-import 'react-toastify/dist/ReactToastify.css';
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import "react-toastify/dist/ReactToastify.css";
 // import { ThemeProvider } from "@material-ui/styles";
 
 const queryClient = new QueryClient({
@@ -41,6 +42,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <ThemeProvider theme={theme}>
         <App />
       </ThemeProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   </React.StrictMode>
 );

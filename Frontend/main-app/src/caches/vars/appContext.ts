@@ -5,4 +5,5 @@ export const VAR_CACHE_APP_CONTEXT_SETTING = CACHE_PREFIX + "appcontext";
 
 export const appContextInitCache: TAppContext = {
   backdrop: false,
+  popupDesignBoard: false,
 };

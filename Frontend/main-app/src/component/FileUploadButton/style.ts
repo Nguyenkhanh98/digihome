@@ -1,21 +1,23 @@
 import { makeStyles } from "@mui/styles";
-const useStyle = makeStyles(
+
+const useStyle: any = makeStyles(
   () => ({
     container: {
       width: "100%",
       height: "100%",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 10,
+      cursor: "pointer",
+      "&:hover": {
+        backgroundColor: "rgba(0, 0, 0, 0.2)",
+      },
     },
     button: {
-      width: "5em",
-      marginTop: "20px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100%",
     },
   }),
-  { name: "SaveDesign" }
+  { name: "FileUploadButton" }
 );
 
 export default useStyle;

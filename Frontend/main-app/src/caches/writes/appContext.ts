@@ -1,11 +1,11 @@
-import { useQueryClient } from "react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { VAR_CACHE_APP_CONTEXT_SETTING } from "../vars";
 
 export const useWriteCacheAppContext = () => {
   const queryClient = useQueryClient();
-  return async (data: any) => {
-    await queryClient.setQueryData(
-      VAR_CACHE_APP_CONTEXT_SETTING,
+  return (data: any) => {
+    queryClient.setQueryData(
+      [VAR_CACHE_APP_CONTEXT_SETTING],
       (preState: any) => {
         return {
           ...preState,
@@ -13,8 +13,6 @@ export const useWriteCacheAppContext = () => {
         };
       }
     );
-    await queryClient.invalidateQueries({
-      [VAR_CACHE_APP_CONTEXT_SETTING]: true,
-    });
+    // queryClient.invalidateQueries([VAR_CACHE_APP_CONTEXT_SETTING]);
   };
 };

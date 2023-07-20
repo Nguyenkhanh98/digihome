@@ -2508,7 +2508,6 @@ var BP3D;
                 var scope = this;
                 var loaderCallback = function (geometry, materials) {
                     var item = new (BP3D.Items.Factory.getClass(itemType))(scope.model, metadata, geometry, new THREE.MeshFaceMaterial(materials), position, rotation, scale);
-                    console.log(item,'===============item',materials)
                     item.fixed = fixed || false;
                     scope.items.push(item);
                     scope.add(item);
@@ -2585,6 +2584,7 @@ var BP3D;
                 };
                 return JSON.stringify(room);
             };
+
             Model.prototype.newRoom = function (floorplan, items) {
                 var _this = this;
                 this.scene.clearItems();

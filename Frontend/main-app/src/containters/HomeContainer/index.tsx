@@ -7,7 +7,7 @@ import React, {
 } from "react";
 // import { signup } from "@/operations/mutations/user";
 
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 export function AuthContainer({ component: Component, ...props }: any) {
   // const { mutate, isLoading, isError, error, data } = useMutation(signup);
 

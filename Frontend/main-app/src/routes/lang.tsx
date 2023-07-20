@@ -1,12 +1,13 @@
-import {  useParams, Outlet } from "react-router-dom";
+import { useParams, Outlet } from "react-router-dom";
 import { IntlProvider } from "react-intl";
 import {
   useCMSQueryTranslationByLang,
   useLanguagesCMSQuery,
 } from "@/operations/queries/language";
 import { useReadCacheGetLanguageId } from "@/caches/reads/appSetting";
-import { useEffect} from "react";
+import { useEffect } from "react";
 import { TLanguage } from "@/operations/types";
+import BackDrop from "@/component/BackDrop";
 const LangRouter = () => {
   const languageId = useReadCacheGetLanguageId();
   const params = useParams();
@@ -28,7 +29,7 @@ const LangRouter = () => {
   );
 
   useEffect(() => {
-    if (language && language.id) {
+    if (language && language.id && languageId !== language.id) {
       refetch();
     }
   }, [language]);
@@ -42,6 +43,7 @@ const LangRouter = () => {
           defaultLocale={"vi"}
         >
           <Outlet />
+          <BackDrop />
         </IntlProvider>
       )}
     </>

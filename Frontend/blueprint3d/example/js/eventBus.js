@@ -16,9 +16,8 @@ class EventBus  {
     handler (t) {
       console.log('REVEIVE FROM PARENT', event);
       if (event && event.data && event.data.action){
-        console.log(t.events);
         if (t.events[event.data.action]) {
-          t.events[event.data.action].forEach(callback => callback());
+          t.events[event.data.action].forEach(callback => callback(event.data.data));
         }
       }
     }           
@@ -28,20 +27,18 @@ class EventBus  {
     }
 
      on(event, callback) {
-    if (!this.events[event]) {
-      this.events[event] = [];
-    }
-    this.events[event].push(callback);
+      if (!this.events[event]) {
+        this.events[event] = [];
+      }
+      this.events[event].push(callback);
   }
 
    off(event, callback) {
     if (this.events[event]) {
-      this.events[event] = this.events[event].filter(cb => cb !== callback);
-    }
-  }
+      this.events[event] = this.events[event].filter(cb=> cb !== callback);
+    }}
 
    emit(action, data) {
-    console.log('EMIT SUCCESS',action,data)
     window.parent.postMessage({action, data},this.targetOrigin)
   }
 }
