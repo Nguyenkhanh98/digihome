@@ -9,15 +9,18 @@ import { useMutation } from "react-query";
 // import eventBus from "@/services/eventBus";
 import DesignBoardComponent from "@/component/DesignBoardComponent";
 import { useParams } from "react-router-dom";
+import Dialog from "@mui/material/Dialog";
 import { EACTION } from "@/configs/action";
 import { Env } from "@/configs";
 import { useCustomNavigate } from "@/hooks/useRedirect";
+import UploadDesign from "@/component/UploadDesign";
 interface IAction {
   action: EACTION;
   data: any;
 }
 export function DesignBoardContainer() {
   const navigate = useCustomNavigate();
+  const [openDialog, setOpendialog] = useState(false);
   const params = useParams();
   const [isLoadingIframe, setIsLoadingIframe] = useState(true);
   const iframeRef: any = useRef(null);
@@ -27,15 +30,13 @@ export function DesignBoardContainer() {
     console.log("Iframe content loaded successfully!");
     sendDataToIframe();
   };
-  const handleIframeLoadStart = () => {
-    setIsLoadingIframe(true);
-    console.log("Iframe loading has started.");
-  };
 
   useEffect(() => {
     // Listen for a custom event
 
     const handler = (event: any) => {
+      console.log("asdasdasda");
+
       const origin = event.origin;
       if (origin !== Env.MICRO_FRONTEND_URL.DESIGN_BOARD) {
         return;
@@ -47,7 +48,12 @@ export function DesignBoardContainer() {
       }
       switch (action) {
         case EACTION.RETURN_PREVIOUS:
-          navigate('')
+          navigate("");
+          break;
+
+        case EACTION.LOAD_DESIGN:
+          console.log("asdasdasda");
+          setOpendialog(true);
           break;
 
         default:
@@ -68,13 +74,19 @@ export function DesignBoardContainer() {
     iframeRef.current?.contentWindow?.postMessage(data, "*");
   };
 
+  const onSelect = (item) => {
+    console.log(item);
+  };
+  const onCloseDialog = () => {
+    setOpendialog(false);
+  };
+
   return (
     <>
-      <DesignBoardComponent
-        onLoadStart={handleIframeLoadStart}
-        onLoad={handleIframeLoad}
-        iframeRef={iframeRef}
-      />
+      <DesignBoardComponent onLoad={handleIframeLoad} iframeRef={iframeRef} />
+      <Dialog onClose={onCloseDialog} open={openDialog}>
+        <UploadDesign onSelect={onSelect} />
+      </Dialog>
     </>
   );
 }

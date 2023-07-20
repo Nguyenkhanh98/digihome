@@ -2,9 +2,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -15,7 +12,7 @@ import { useInjectLang } from "@/hooks/useLang";
 import BGImg from "@/assets/images/img/login_bg.jpg";
 import useStyle from "./style";
 
-export function SignupComponent({ handleSubmit }: any) {
+export function SignupComponent({ handleSubmit, errors }: any) {
   const navigate = useNavigate();
   const injectLang = useInjectLang();
 
@@ -87,6 +84,7 @@ export function SignupComponent({ handleSubmit }: any) {
                   id="firstName"
                   label="First Name"
                   autoFocus
+                  error={errors.firstName}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -97,6 +95,8 @@ export function SignupComponent({ handleSubmit }: any) {
                   label="Last Name"
                   name="lastName"
                   autoComplete="family-name"
+                  error={errors.lastName}
+
                 />
               </Grid>
               <Grid item xs={12}>
@@ -107,6 +107,8 @@ export function SignupComponent({ handleSubmit }: any) {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  error={errors.email}
+
                 />
               </Grid>
               <Grid item xs={12}>
@@ -118,6 +120,7 @@ export function SignupComponent({ handleSubmit }: any) {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  error={errors.password}
                 />
               </Grid>
 

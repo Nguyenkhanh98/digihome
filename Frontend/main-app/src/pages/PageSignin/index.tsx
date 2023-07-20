@@ -15,11 +15,6 @@ function PageSignin() {
   const { mutate} = useMutation(userSigninMutation);
   const updateAppContext = useWriteCacheAppContext();
   const [errors, setErrors] = useState({});
-  // useEffect(()=>{
-  //   if(data) {
-  //   updateAppContext({backdrop: false});
-  //   }
-  // }, [data]);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -45,7 +40,6 @@ function PageSignin() {
           }
          });
       }
-
   };
 
   return (
