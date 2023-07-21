@@ -6,8 +6,10 @@ services:
       args:
         - NODE_ENV=development
     container_name: backend
+    env_file:
+      - .env
     ports:
-      - 3000:3000
+      - 8585:3000
     depends_on:
       - redis
       - postgres
@@ -19,16 +21,19 @@ services:
     image: redis
     container_name: redis
     ports:
-      - 6379:6379
+      - 6380:6379
     volumes:
       - redis:/var/lib/redis
 
   postgres:
     image: postgres:alpine
     restart: always
+    ports:
+      - 5433:5432
     environment:
-      - DB_USER=postgres
-      - DB_PASS=postgres
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=dev
+      - POSTGRES_DB=digihome
 
 volumes:
   redis:
