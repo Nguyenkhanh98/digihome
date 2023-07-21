@@ -1,10 +1,21 @@
+import { CustomConfigModule } from '@common/config/config.module';
+import { AppDataSource } from '@common/config/datasource.config';
+import { ApiModule } from '@module/api.module';
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 @Module({
-  imports: [],
+  imports: [
+    CustomConfigModule,
+    TypeOrmModule.forRootAsync({
+      useFactory() {
+        return AppDataSource.options;
+      },
+    }),
+    ApiModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {}
