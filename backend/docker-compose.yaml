@@ -7,7 +7,7 @@ services:
         - NODE_ENV=development
     container_name: backend
     env_file:
-      - .env
+      - .env.staging
     ports:
       - 8585:3000
     depends_on:
@@ -16,6 +16,7 @@ services:
     links:
       - postgres:postgres
     restart: on-failure:3
+    command: sh -c "yarn migration:run && yarn db:seed && yarn start:prod"
 
   redis:
     image: redis

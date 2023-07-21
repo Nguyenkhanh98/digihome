@@ -1,18 +1,27 @@
-import { Outlet, redirect } from "react-router-dom";
+import { useReadCachAppContext } from "@/caches/reads/appContext";
+import { useCustomNavigate } from "@/hooks/useRedirect";
+import { useEffect } from "react";
+import { Outlet, useLocation, useParams } from "react-router-dom";
 
 const PrivateRoute = () => {
+  const location = useLocation();
+  const appContext = useReadCachAppContext();
+  const navigate = useCustomNavigate();
+  useEffect(() => {
+    const token = appContext.token;
+    if (!token) {
+      return navigate("/login", { state: { pathNavigate: location.pathname } });
+    }
+  }, [appContext.token]);
+
   return (
     <>
-    <Outlet/>
+      <Outlet />
     </>
   );
 };
 
 export default PrivateRoute;
 export const privateRouterLoader = async ({ params }) => {
-  const { langPath } = params;
-  if (!window.localStorage.getItem("token")) {
-    // return redirect("/" + langPath + '/login');
-  }
   return null;
 };

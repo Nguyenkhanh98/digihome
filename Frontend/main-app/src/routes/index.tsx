@@ -15,8 +15,11 @@ import RootRoute, { rootLoader } from "@/routes/root";
 import AuthRoute, { authRouteLoader } from "@/routes/auth";
 import LangRoute, { langRouteLoader } from "@/routes/lang";
 import PublicRoute, { publicRouteLoader } from "@/routes/public";
-import PrivateRoute, {privateRouterLoader} from "./privateRouter";
+import PrivateRoute, { privateRouterLoader } from "./privateRouter";
 import DesignBoardPage from "@/pages/DesignBoard";
+import { localStorageAPI } from "@/services/webapi/storage";
+import { useWriteCacheAppContext } from "@/caches/writes/appContext";
+import { LOCAL_STORAGE } from "@/configs/storage";
 // import Maintenance from 'pages/Maintenance';
 
 const isSetTimeOut = false;
@@ -27,17 +30,17 @@ const TIMEOUT =
 // const bookingRouter = BOOKING_ROUTES.map((router) => router.path);
 // bookingRouter.splice(-1);
 const RouterApp = (props: any) => {
-  const { lang } = props;
+  const updateAppContext = useWriteCacheAppContext();
 
-  //   const injectLang = useInjectLang();
-  //   const dispatch = useDispatch();
-  //   const formatMessage = useTranslation();
-
-  const redirectIfUser = async () => {
-    // Add your redirect logic here
-  };
-
-  const logoutUser = async () => {};
+  useEffect(() => {
+    const token = localStorageAPI.getItem(LOCAL_STORAGE.TOKEN);
+    if (token) {
+      updateAppContext({
+        token,
+        profile: localStorageAPI.getItem(LOCAL_STORAGE.PROFILE),
+      });
+    }
+  }, []);
 
   const appRouter = createBrowserRouter([
     {
@@ -63,7 +66,7 @@ const RouterApp = (props: any) => {
                   path: "login",
                   element: <SigninPage />,
                 },
-                 {
+                {
                   path: "register",
                   element: <SignupPage />,
                 },
@@ -79,7 +82,6 @@ const RouterApp = (props: any) => {
               element: <HomePage />,
             },
             {
-             
               element: <PrivateRoute />,
               loader: privateRouterLoader,
               children: [
@@ -87,8 +89,8 @@ const RouterApp = (props: any) => {
                   path: "design-board",
                   element: <DesignBoardPage />,
                 },
-              ]
-            }
+              ],
+            },
           ],
         },
       ],

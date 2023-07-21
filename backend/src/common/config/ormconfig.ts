@@ -1,8 +1,4 @@
-import { DataSource, DataSourceOptions } from 'typeorm';
-import * as dotenv from 'dotenv';
-dotenv.config();
-
-export const AppDataSource = new DataSource({
+export = {
   type: 'postgres',
   host: process.env.DATABASE_HOST || 'localhost',
   port: Number(process.env.DATABASE_PORT) || 5432,
@@ -12,9 +8,10 @@ export const AppDataSource = new DataSource({
   schema: process.env.DATABASE_SCHEMA || 'public',
   synchronize: false,
   migrations: [__dirname + './../../migrations/*{.ts,.js}'],
+  seeds: [__dirname + './../../seeds/*{.ts,.js}'],
   entities: [__dirname + '../../../**/**/*entity{.ts,.js}'],
   logging: true,
   migrationsRun: false,
   migrationsTableName: 'history',
   timezone: 'utc',
-} as DataSourceOptions);
+};

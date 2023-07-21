@@ -3,13 +3,57 @@ import useHeaderStyle from "./style";
 import classnames from "classnames";
 import { useInjectLang } from "@/hooks/useLang";
 import { useNavigate } from "react-router-dom";
+import { TAppContext } from "@/caches/types";
+import { Box } from "@mui/material";
 
-export function FooterComponent() {
+interface IHeaderProps {
+  appContext: TAppContext;
+  logout: any;
+}
+export const HeaderComponent: React.FC<IHeaderProps> = ({
+  logout,
+  appContext,
+}) => {
   const classes = useHeaderStyle();
   const injectLang = useInjectLang();
   const navigate = useNavigate();
 
-  console.log(injectLang('/login'),'ssssss');
+  const { profile, token } = appContext;
+  const AnonymousContent = () => {
+    return (
+      <>
+        <div
+          className={classes.loginButton}
+          onClick={() => navigate(injectLang("register"))}
+        >
+          Sign up
+        </div>
+        <div
+          className={classes.loginButton}
+          onClick={() => navigate(injectLang("login"))}
+        >
+          Login
+        </div>
+      </>
+    );
+  };
+
+  const AuthContent = () => {
+    return (
+      <>
+        <Box>
+          <div>Template</div>
+        </Box>
+        <div className={classes.loginButton}>
+          {`${profile?.firstName || ""} ${profile?.lastName || ""}`}
+        </div>
+        <div className={classes.loginButton} onClick={logout}>
+          Logout
+        </div>
+      </>
+    );
+  };
+
   return (
     <header id="header">
       <div className="header-top">
@@ -25,8 +69,7 @@ export function FooterComponent() {
                 { [classes.authCom]: true }
               )}
             >
-              <div className={classes.loginButton} onClick={()=>navigate(injectLang('register'))}>Sign up</div>
-              <div className={classes.loginButton} onClick={()=>navigate(injectLang('login'))}>Login</div>
+              {token ? <AuthContent /> : <AnonymousContent />}
             </div>
           </div>
         </div>
@@ -47,7 +90,6 @@ export function FooterComponent() {
           </div>
           <nav id="nav-menu-container">
             <ul className="nav-menu">
-         
               <li>
                 <a href="">About</a>
               </li>
@@ -99,6 +141,6 @@ export function FooterComponent() {
       </div>
     </header>
   );
-}
+};
 
-export default FooterComponent;
+export default HeaderComponent;

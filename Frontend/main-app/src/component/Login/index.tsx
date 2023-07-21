@@ -14,10 +14,28 @@ import BGImg from "@/assets/images/img/login_bg.jpg";
 import { useNavigate } from "react-router-dom";
 import { useInjectLang } from "@/hooks/useLang";
 import useStyle from "./style";
-export function LoginComponent({ handleSubmit,errors }: any) {
+import { useEffect, useRef, useState } from "react";
+export function LoginComponent({ handleSubmit, errors, state }: any) {
+  const userNameRef = useRef<any>("");
+  const userPasswordRef = useRef<any>("");
+  const [emailPlaceholder, setEmailPlaceholder] = useState("");
+  const [passPlaceholder, setPassPlaceholder] = useState("");
   const classes = useStyle();
   const navigate = useNavigate();
   const injectLang = useInjectLang();
+
+  useEffect(() => {
+    if (userNameRef.current && state && state.email) {
+      userNameRef.current.value = state.email;
+      setEmailPlaceholder("");
+    }
+
+    if (userPasswordRef.current && state && state.password) {
+      setPassPlaceholder("");
+      userPasswordRef.current.value = state.password;
+    }
+  }, [state]);
+
   return (
     <Grid container component="main" sx={{ height: "100vh" }}>
       <CssBaseline />
@@ -79,23 +97,24 @@ export function LoginComponent({ handleSubmit,errors }: any) {
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label={emailPlaceholder || "Email Address"}
               name="email"
               autoComplete="email"
               autoFocus
               error={errors.email}
-
+              inputRef={userNameRef}
             />
             <TextField
               margin="normal"
               required
               fullWidth
               name="password"
-              label="Password"
+              label={passPlaceholder || "Password"}
               type="password"
               id="password"
               autoComplete="current-password"
               error={errors.password}
+              inputRef={userPasswordRef}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}

@@ -6,9 +6,11 @@ import { useWriteCacheAppContext } from "@/caches/writes/appContext";
 import { toast } from "react-toastify";
 import { isValidEmail } from "@/helpers/string";
 import { useState } from "react";
+import { useCustomNavigate } from "@/hooks/useRedirect";
 export function PageSignup() {
   const { mutate } = useMutation(userSignupMutation);
   const updateAppContext = useWriteCacheAppContext();
+  const navigate = useCustomNavigate();
   const [errors, setErrors] = useState({});
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -37,13 +39,14 @@ export function PageSignup() {
       updateAppContext({ backdrop: true });
       setErrors({});
       mutate(
-        { email, password },
+        { email, password, lastName, firstName },
         {
           onError: () => {
             toast.error("Some thing occurred. Please try again");
           },
           onSuccess: () => {
-            toast.success("sRegister success, Let's login!");
+            toast.success("Register success, Let's login!");
+            navigate("login", { state: { email, password } });
           },
           onSettled: () => {
             updateAppContext({ backdrop: false });
