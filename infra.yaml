@@ -1,0 +1,558 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CloudFormation Stack for My App
+Parameters:
+  EnvironmentName:
+    Type: String
+    Description: 'Name of the environment (e.g., "Production" or "Staging")'
+    Default: MyEnvironment
+Resources:
+  VPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvironmentName}-VPC"
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 5f6bcdc1-8b5c-4896-9e21-71a12c0b6968
+  PublicSubnet:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs ""
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvironmentName}-PublicSubnet"
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: e0d9dbf5-b686-40fe-a301-c4d4bae980d5
+  PrivateSubnet:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs ""
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvironmentName}-PrivateSubnet"
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 05ae97a9-8e6f-4fd4-80aa-a87f113f3cc2
+  InternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 68fb350d-1434-48ef-9028-ce654f8988c0
+  VPCGatewayAttachment:
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: e07081a1-6176-426d-8804-9d5feaaba487
+  NatGatewayEIP:
+    Type: "AWS::EC2::EIP"
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: a09c3fdb-dc12-40a8-a947-616ab816e93e
+  NatGateway:
+    Type: "AWS::EC2::NatGateway"
+    Properties:
+      AllocationId: !GetAtt NatGatewayEIP.AllocationId
+      SubnetId: !Ref PublicSubnet
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: db2cf916-da38-4ede-aa28-8817e0f97883
+  PrivateRouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvironmentName}-PrivateRouteTable"
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: b96f0ba0-fcf7-403b-9582-b884bb8f804b
+  PrivateRoute:
+    Type: "AWS::EC2::Route"
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 16c1d1e2-f8d0-4e43-a059-60167effad36
+  SecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: Security group for the EC2 instances and RDS
+      VpcId: !Ref VPC
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 4ce25760-f31c-4105-ad29-2fdbfecde646
+  PostgreSQLRDS:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      DBInstanceIdentifier: MyPostgreSQLDB
+      Engine: postgres
+      DBName: MyDatabase
+      MasterUsername: admin
+      MasterUserPassword: !Ref PostgreSQLPassword
+      AllocatedStorage: 20
+      MultiAZ: false
+      StorageType: gp2
+      VPCSecurityGroups:
+        - !Ref SecurityGroup
+      DBSubnetGroupName: !Ref DBSubnetGroup
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: bf1e568d-1f5f-48e9-9b88-538d84f4f24a
+  RedisCache:
+    Type: "AWS::ElastiCache::CacheCluster"
+    Properties:
+      CacheNodeType: cache.t2.micro
+      Engine: redis
+      NumCacheNodes: 1
+      VpcSecurityGroupIds:
+        - !Ref SecurityGroup
+      CacheSubnetGroupName: !Ref CacheSubnetGroup
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 56eb1ad1-2857-403b-a7dc-29443897093e
+  ECSExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: "sts:AssumeRole"
+      Path: /
+      Policies:
+        - PolicyName: ECSExecutionRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "arn:aws:logs:*:*:*"
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 594aee54-5b6d-4629-ab76-6088ea097e26
+  ECSCluster:
+    Type: "AWS::ECS::Cluster"
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 0b1707a4-c592-44b9-8d96-17bbd61c2c02
+  FargateTaskDefinition:
+    Type: "AWS::ECS::TaskDefinition"
+    Properties:
+      Family: MyFargateTask
+      Cpu: "256"
+      Memory: "512"
+      NetworkMode: awsvpc
+      ExecutionRoleArn: !GetAtt ECSExecutionRole.Arn
+      RequiresCompatibilities:
+        - FARGATE
+      ContainerDefinitions:
+        - Name: MyNestJSApp
+          Image: your-nestjs-app-image
+          PortMappings:
+            - ContainerPort: 3000
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 8a7d0614-72b5-45cc-baf6-b55088605900
+  FargateService:
+    Type: "AWS::ECS::Service"
+    Properties:
+      Cluster: !Ref ECSCluster
+      DesiredCount: 2
+      LaunchType: FARGATE
+      TaskDefinition: !Ref FargateTaskDefinition
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+            - !Ref PrivateSubnet
+          SecurityGroups:
+            - !Ref SecurityGroup
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: c328c9ce-0792-4fbd-a40f-dd8ccb21f7fa
+  S3Bucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: my-react-app-bucket
+      AccessControl: Private
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: f6bae7a2-b393-4531-abde-1dd3f9698986
+  CloudFrontDistribution:
+    Type: "AWS::CloudFront::Distribution"
+    Properties:
+      DistributionConfig:
+        Origins:
+          - Id: MyS3Origin
+            DomainName: !GetAtt S3Bucket.DomainName
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        DefaultCacheBehavior:
+          TargetOriginId: MyS3Origin
+          ForwardedValues:
+            QueryString: "false"
+            Cookies:
+              Forward: none
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: fb6f408b-1b9c-4358-9840-03a004af2825
+  APIGateway:
+    Type: "AWS::ApiGateway::RestApi"
+    Properties:
+      Name: MyAPIGateway
+      Description: API Gateway for your NestJS backend
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvironmentName}-APIGateway"
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: f310b4f4-27a5-41b8-a897-36dfe58053cb
+  APIGatewayResource:
+    Type: "AWS::ApiGateway::Resource"
+    Properties:
+      RestApiId: !Ref APIGateway
+      ParentId: !GetAtt APIGateway.RootResourceId
+      PathPart: "{proxy+}"
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: bc611246-4346-4235-8461-767f6710c1b5
+  APIGatewayMethod:
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      RestApiId: !Ref APIGateway
+      ResourceId: !Ref APIGatewayResource
+      HttpMethod: ANY
+      AuthorizationType: NONE
+      Integration:
+        Type: HTTP_PROXY
+        IntegrationHttpMethod: ANY
+        Uri: !Sub "https://${Domain}/nestjs/{proxy}"
+        ConnectionType: VPC_LINK
+        ConnectionId: !Ref VPCLink
+        MethodResponses:
+          - StatusCode: 200
+      RequestParameters:
+        method.request.path.proxy: true
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: db59e9b3-a0e0-48c7-8e92-d27704dc2410
+  VPCLink:
+    Type: "AWS::ApiGateway::VpcLink"
+    Properties:
+      Name: !Sub "${EnvironmentName}-VPCLink"
+      TargetArns:
+        - !GetAtt FargateService.LoadBalancer
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: d6479127-732e-4ce0-99ce-e0bb7fed6632
+  DomainName:
+    Type: "AWS::ApiGateway::DomainName"
+    Properties:
+      DomainName: !Ref Domain
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 4fa4d150-23b7-46ab-892b-ce0e699ad202
+  BasePathMapping:
+    Type: "AWS::ApiGateway::BasePathMapping"
+    Properties:
+      DomainName: !Ref DomainName
+      RestApiId: !Ref APIGateway
+      Stage: !Ref EnvironmentName
+      BasePath: !Ref BasePath
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: a89a8aa8-1d89-4f21-872e-51cc8a2a6891
+  RecordSet:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      HostedZoneName: !Ref HostedZone
+      Name: !Ref Domain
+      Type: A
+      AliasTarget:
+        HostedZoneId: !GetAtt DomainName.RegionalHostedZoneId
+        DNSName: !GetAtt DomainName.RegionalDomainName
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 84603d1a-7540-48cc-a8e3-dd754844d2fc
+Outputs:
+  NestJSAppURL:
+    Description: URL for the NestJS backend running on ECS Fargate
+    Value: !Join
+      - ""
+      - - !GetAtt APIGateway.DomainName
+        - "/nestjs/{proxy}"
+  ReactAppURL:
+    Description: URL for the React app hosted on CloudFront
+    Value: !GetAtt CloudFrontDistribution.DomainName
+  Domain:
+    Description: Domain for the API Gateway and React app
+    Value: !Ref Domain
+Metadata:
+  "AWS::CloudFormation::Designer":
+    4fa4d150-23b7-46ab-892b-ce0e699ad202:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 620
+        "y": 960
+      z: 1
+      embeds: []
+    84603d1a-7540-48cc-a8e3-dd754844d2fc:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 770
+        "y": 960
+      z: 1
+      embeds: []
+    f310b4f4-27a5-41b8-a897-36dfe58053cb:
+      size:
+        width: 150
+        height: 150
+      position:
+        x: 1060
+        "y": 520
+      z: 1
+      embeds: []
+    a89a8aa8-1d89-4f21-872e-51cc8a2a6891:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 770
+        "y": 880
+      z: 1
+      embeds: []
+    bc611246-4346-4235-8461-767f6710c1b5:
+      size:
+        width: 240
+        height: 240
+      position:
+        x: 60
+        "y": 390
+      z: 1
+      embeds:
+        - db59e9b3-a0e0-48c7-8e92-d27704dc2410
+    f6bae7a2-b393-4531-abde-1dd3f9698986:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 310
+        "y": 980
+      z: 1
+      embeds: []
+    fb6f408b-1b9c-4358-9840-03a004af2825:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 310
+        "y": 870
+      z: 1
+      embeds: []
+    0b1707a4-c592-44b9-8d96-17bbd61c2c02:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 510
+        "y": 700
+      z: 1
+      embeds: []
+    594aee54-5b6d-4629-ab76-6088ea097e26:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 480
+        "y": 1020
+      z: 1
+      embeds: []
+    8a7d0614-72b5-45cc-baf6-b55088605900:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 480
+        "y": 930
+      z: 1
+      embeds: []
+    a09c3fdb-dc12-40a8-a947-616ab816e93e:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -300
+        "y": 800
+      z: 1
+      embeds: []
+    68fb350d-1434-48ef-9028-ce654f8988c0:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 310
+        "y": 780
+      z: 1
+      embeds: []
+    5f6bcdc1-8b5c-4896-9e21-71a12c0b6968:
+      size:
+        width: 270
+        height: 260
+      position:
+        x: 260
+        "y": 50
+      z: 1
+      embeds:
+        - 4ce25760-f31c-4105-ad29-2fdbfecde646
+        - 56eb1ad1-2857-403b-a7dc-29443897093e
+    4ce25760-f31c-4105-ad29-2fdbfecde646:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 400
+        "y": 220
+      z: 2
+      parent: 5f6bcdc1-8b5c-4896-9e21-71a12c0b6968
+      embeds: []
+      iscontainedinside:
+        - 5f6bcdc1-8b5c-4896-9e21-71a12c0b6968
+    56eb1ad1-2857-403b-a7dc-29443897093e:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 440
+        "y": 70
+      z: 2
+      parent: 5f6bcdc1-8b5c-4896-9e21-71a12c0b6968
+      embeds: []
+      isassociatedwith:
+        - 4ce25760-f31c-4105-ad29-2fdbfecde646
+    bf1e568d-1f5f-48e9-9b88-538d84f4f24a:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 670
+        "y": 130
+      z: 1
+      embeds: []
+    b96f0ba0-fcf7-403b-9582-b884bb8f804b:
+      size:
+        width: 240
+        height: 240
+      position:
+        x: -130
+        "y": 0
+      z: 1
+      embeds:
+        - 16c1d1e2-f8d0-4e43-a059-60167effad36
+    e07081a1-6176-426d-8804-9d5feaaba487:
+      source:
+        id: 5f6bcdc1-8b5c-4896-9e21-71a12c0b6968
+      target:
+        id: 68fb350d-1434-48ef-9028-ce654f8988c0
+    05ae97a9-8e6f-4fd4-80aa-a87f113f3cc2:
+      size:
+        width: 150
+        height: 150
+      position:
+        x: 610
+        "y": 230
+      z: 1
+      embeds: []
+    c328c9ce-0792-4fbd-a40f-dd8ccb21f7fa:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 660
+        "y": 780
+      z: 1
+      embeds: []
+    d6479127-732e-4ce0-99ce-e0bb7fed6632:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 900
+        "y": 700
+      z: 1
+      embeds: []
+    db59e9b3-a0e0-48c7-8e92-d27704dc2410:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 90
+        "y": 450
+      z: 2
+      parent: bc611246-4346-4235-8461-767f6710c1b5
+      embeds: []
+      iscontainedinside:
+        - bc611246-4346-4235-8461-767f6710c1b5
+        - f310b4f4-27a5-41b8-a897-36dfe58053cb
+    e0d9dbf5-b686-40fe-a301-c4d4bae980d5:
+      size:
+        width: 150
+        height: 150
+      position:
+        x: -10
+        "y": 850
+      z: 1
+      embeds: []
+    db2cf916-da38-4ede-aa28-8817e0f97883:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -200
+        "y": 800
+      z: 1
+      embeds: []
+    16c1d1e2-f8d0-4e43-a059-60167effad36:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -100
+        "y": 60
+      z: 2
+      parent: b96f0ba0-fcf7-403b-9582-b884bb8f804b
+      embeds: []
+      isassociatedwith:
+        - db2cf916-da38-4ede-aa28-8817e0f97883
+      iscontainedinside:
+        - b96f0ba0-fcf7-403b-9582-b884bb8f804b
+      dependson:
+        - e07081a1-6176-426d-8804-9d5feaaba487

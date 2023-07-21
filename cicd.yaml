@@ -1,0 +1,154 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CI/CD Pipeline for NestJS app with tests
+
+Parameters:
+  GitHubToken:
+    Type: String
+    Description: s
+    Default: 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
+
+  GitHubOwner:
+    Type: String
+    Description: GitHub username or organization
+    Default: digihome
+
+  GitHubRepo:
+    Type: String
+    Description: GitHub repository name for your NestJS app
+    Default: digihome
+
+  GitHubBranch:
+    Type: String
+    Description: GitHub branch name to trigger the pipeline
+    Default: master
+  ECRRepositoryName:
+    Type: String
+    Description: Name of the ECR repository to store the Docker image
+    Default: digihome
+
+Resources:
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+  CodePipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: MyCodePipelineServiceRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: MyCodePipelineServiceRolePolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codecommit:*
+                  - codebuild:*
+                  - ecr:*
+                Resource: "*"
+
+  GitHubWebhook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        SecretToken: !Ref GitHubToken
+      Filters:
+        - JsonPath: $.ref
+          MatchEquals: "refs/heads/{Branch}"
+      TargetPipeline: !Ref Pipeline
+      TargetAction: SourceAction
+
+  ECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref ECRRepositoryName
+
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: MyCodeBuildProject
+      ServiceRole: !GetAtt CodePipelineServiceRole.Arn
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:4.0
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                nodejs: 14.x
+          build:
+            commands:
+              - echo "Building Docker image..."
+              - docker build -t $ECR_REGISTRY_URI:latest .
+              - echo "Logging in to Amazon ECR..."
+              - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY_URI
+              - echo "Pushing Docker image to ECR..."
+              - docker push $ECR_REGISTRY_URI:latest
+          post_build:
+            commands:
+              - echo "Running tests..."
+              - npm install
+              - npm test
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - Type: EVENT
+              Pattern: PUSH
+
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactBucket
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: 1
+                Provider: GitHub
+              Configuration:
+                Owner: !Ref GitHubOwner
+                Repo: !Ref GitHubRepo
+                Branch: !Ref GitHubBranch
+                OAuthToken: !Ref GitHubToken
+              OutputArtifacts:
+                - Name: SourceOutput
+          Blockers:
+            - Name: SourceApproval
+              Type: Manual
+        - Name: BuildAndTest
+          Actions:
+            - Name: CodeBuild
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref CodeBuildProject
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: BuildOutput
+
+Outputs:
+  PipelineURL:
+    Description: URL for the CI/CD pipeline in AWS CodePipeline
+    Value: !Ref Pipeline

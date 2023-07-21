@@ -1,0 +1,308 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation Stack for React Apps with CI/CD
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Description: Staging
+    Default: Staging
+  SourceCodeBucketName:
+    Type: String
+    Description: S3 bucket name to store the source code
+    Default: digihomeFE
+  CloudFrontDistributionDomain:
+    Type: String
+    Description: Domain name for CloudFront distribution
+    Default: my-cloudfront-domain.com
+  Domain1:
+    Type: String
+    Description: First domain name for the React app
+    Default: app1.mydomain.com
+  Domain2:
+    Type: String
+    Description: Second domain name for the React app
+    Default: app2.mydomain.com
+  GitHubToken:
+    Type: String
+    Description: GitHub OAuth token for CodePipeline to access the repository
+  CloudFrontCertificateArn:
+    Type: String
+    Description: ARN of the ACM certificate used by CloudFront
+    Default: asc
+
+Resources:
+  SourceCodeBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref SourceCodeBucketName
+      AccessControl: Private
+
+  PipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: PipelineRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketVersioning
+                  - s3:PutObject
+                  - s3:PutObjectAcl
+                  - s3:PutBucketVersioning
+                Resource:
+                  - !Sub "arn:aws:s3:::${SourceCodeBucketName}/*"
+                  - !Sub "arn:aws:s3:::${SourceCodeBucketName}"
+              - Effect: Allow
+                Action:
+                  - codebuild:StartBuild
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - codepipeline:PutJobSuccessResult
+                  - codepipeline:PutJobFailureResult
+                  - codepipeline:PutJobStatusForJob
+                Resource: "*"
+
+  CodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !GetAtt PipelineRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Ref SourceCodeBucketName
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+                Version: 1
+              Configuration:
+                Owner: nguyenkhanh98
+                Repo: digihome
+                Branch: master # or your preferred branch name
+                OAuthToken: !Ref GitHubToken
+              OutputArtifacts:
+                - Name: SourceOutput
+              RunOrder: 1
+        - Name: Build
+          Actions:
+            - Name: BuildAction
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              Configuration:
+                ProjectName: !Ref CodeBuildProject
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: BuildOutput
+              RunOrder: 1
+
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: CodeBuildRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketVersioning
+                Resource:
+                  - !Sub "arn:aws:s3:::${SourceCodeBucketName}/*"
+                  - !Sub "arn:aws:s3:::${SourceCodeBucketName}"
+              - Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                Resource: "*"
+
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: MyCodeBuildProject
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                nodejs: 12
+            build:
+              commands:
+                - npm install
+                - npm run build
+          artifacts:
+            files:
+              - '**/*'
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:4.0
+        Type: LINUX_CONTAINER
+
+  CloudFrontBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${CloudFrontDistributionDomain}"
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - Id: MyReactApp1
+            DomainName: !Ref CloudFrontBucket
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: http-only
+        Enabled: true
+        DefaultCacheBehavior:
+          TargetOriginId: MyReactApp1
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            - PUT
+            - POST
+            - PATCH
+            - DELETE
+          CachedMethods:
+            - GET
+            - HEAD
+          ForwardedValues:
+            QueryString: false
+          MinTTL: 0
+          DefaultTTL: 86400
+          MaxTTL: 31536000
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CloudFrontCertificate
+          SslSupportMethod: sni-only
+        Aliases:
+          - !Ref Domain1
+        PriceClass: PriceClass_100
+
+  CloudFrontBucket2:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${CloudFrontDistributionDomain}-2"
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+
+  CloudFrontDistribution2:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - Id: MyReactApp2
+            DomainName: !Ref CloudFrontBucket2
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: http-only
+        Enabled: true
+        DefaultCacheBehavior:
+          TargetOriginId: MyReactApp2
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            - PUT
+            - POST
+            - PATCH
+            - DELETE
+          CachedMethods:
+            - GET
+            - HEAD
+          ForwardedValues:
+            QueryString: false
+          MinTTL: 0
+          DefaultTTL: 86400
+          MaxTTL: 31536000
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CloudFrontCertificate
+          SslSupportMethod: sni-only
+        Aliases:
+          - !Ref Domain2
+        PriceClass: PriceClass_100
+
+  CloudFrontCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref CloudFrontDistributionDomain
+      ValidationMethod: DNS
+
+  CloudFrontCertificateValidationRecord1:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Ref HostedZone
+      Name: !Select [0, !Split ["*", !Ref Domain1]]
+      Type: CNAME
+      TTL: "300"
+      ResourceRecords:
+        - !GetAtt CloudFrontCertificateArn
+      SetIdentifier: !Sub "${EnvironmentName}Domain1Validation"
+
+  CloudFrontCertificateValidationRecord2:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Ref HostedZone
+      Name: !Select [0, !Split ["*", !Ref Domain2]]
+      Type: CNAME
+      TTL: "300"
+      ResourceRecords:
+        - !GetAtt CloudFrontCertificateArn
+      SetIdentifier: !Sub "${EnvironmentName}Domain2Validation"
+
+Outputs:
+  ReactAppURL1:
+    Description: URL for the first React app hosted on CloudFront
+    Value: !GetAtt CloudFrontDistribution.DomainName
+  ReactAppURL2:
+    Description: URL for the second React app hosted on CloudFront
+    Value: !GetAtt CloudFrontDistribution2.DomainName

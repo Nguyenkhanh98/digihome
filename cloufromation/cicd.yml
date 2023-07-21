@@ -1,0 +1,198 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CI/CD Pipeline for React and NestJS Apps
+
+Parameters:
+  GitHubToken:
+    Type: String
+    Description: Personal access token for GitHub integration
+    Default: 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
+  GitHubOwner:
+    Type: String
+    Description: GitHub username or organization
+    Default: Nguyen Khanh
+  GitHubRepoReactApp1:
+    Type: String
+    Description: GitHub repository name for React App 1
+    Default: digihome
+  GitHubRepoReactApp2:
+    Type: String
+    Description: GitHub repository name for React App 2
+    Default: digihome
+  GitHubRepoNestJS:
+    Type: String
+    Description: GitHub repository name for NestJS App
+    Default: digihome-be
+  GitHubBranch:
+    Type: String
+    Description: Branch to watch for changes (e.g., main)
+    Default: master
+  S3BucketDes:
+    Type: String
+    Description: digihome
+    Default: digihome
+
+Resources:
+  # CodePipeline
+  CICDPipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: MyCICDPipeline
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      ArtifactStore:
+        Location: !Ref ArtifactBucket
+        Type: S3
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: 1
+                Provider: GitHub
+              Configuration:
+                Owner: !Ref GitHubOwner
+                Repo: !Ref GitHubRepoReactApp1
+                Branch: !Ref GitHubBranch
+                OAuthToken: !Ref GitHubToken
+              OutputArtifacts:
+                - Name: SourceArtifactDigihome
+          # Add more Source stages for React App 2 and NestJS
+
+        - Name: BuildReactApp1
+          Actions:
+            - Name: BuildActionReactApp1
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref CodeBuildProjectReactApp1
+              InputArtifacts:
+                - Name: SourceArtifactDigihome
+              OutputArtifacts:
+                - Name: BuildArtifactReactApp1
+
+        - Name: DeployReactApp1
+          Actions:
+            - Name: DeployActionReactApp1
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: S3
+              Configuration:
+                BucketName: !Ref S3BucketReactApp1
+                Extract: "true"
+              InputArtifacts:
+                - Name: BuildArtifactReactApp1
+
+        # Add more stages for Build and Deploy of React App 2 and NestJS
+
+  # CodeBuild Projects
+  CodeBuildProjectReactApp1:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: MyCodeBuildProjectReactApp1
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:5.0
+        Type: LINUX_CONTAINER
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                nodejs: 14
+            build:
+              commands:
+                - npm install
+                - npm run build
+          artifacts:
+            files:
+              - '**/*'
+            name: build
+
+  # S3 Buckets for React Apps
+  S3BucketReactApp1:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: digihome
+      AccessControl: Private
+
+  S3BucketReactApp2:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: digihome/design
+
+      AccessControl: Private
+
+  # IAM Roles and Policies
+  CodePipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: MyCodePipelineServiceRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: MyCodePipelineServiceRolePolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                  - s3:GetBucketVersioning
+                Resource:
+                  - !GetAtt ArtifactBucket.Arn
+                  - !Join
+                    - ""
+                    - - !GetAtt ArtifactBucket
+  # IAM Role for CodeBuild
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: MyCodeBuildServiceRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: MyCodeBuildServiceRolePolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+
+  # Artifact Bucket (for CodePipeline)
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: my-artifact-bucket
+      AccessControl: Private
+
+Outputs:
+  PipelineURL:
+    Description: URL for the CI/CD pipeline in AWS CodePipeline
+    Value: !Ref CICDPipeline
