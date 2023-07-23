@@ -6,11 +6,21 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
+    alias: {
+      "./runtimeConfig": "./runtimeConfig.browser",
+      "@": path.resolve(__dirname, "src"),
+    },
     extensions: [".js", ".jsx", ".ts", ".tsx"],
   },
-  // define: {
-  //   global: "window",
-  // },
-  mode: "development",
+  mode: "production",
+  build: {
+    outDir: "dist",
+    sourcemap: true,
+    commonjsOptions: {
+      include: [/node_modules/],
+      extensions: [".js", ".cjs"],
+      strictRequires: true,
+      transformMixedEsModules: true,
+    },
+  },
 });
