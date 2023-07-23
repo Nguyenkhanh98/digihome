@@ -5,7 +5,7 @@ Parameters:
   GitHubToken:
     Type: String
     Description: Personal access token for GitHub integration
-    Default: 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
+    Default: 
   GitHubOwner:
     Type: String
     Description: GitHub username or organization

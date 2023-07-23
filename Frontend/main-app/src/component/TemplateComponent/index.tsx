@@ -81,13 +81,16 @@ const TemplateComponent: React.FC<ITemplateComponentTypes> = ({
     setDialog(true);
   };
 
-  const onClickModel = (id) => {
+  const onClickModel = (itemClick) => {
     const newModels = modelsData.map((item) => {
-      if (item.id !== id) {
+      if (item.id !== itemClick.id) {
         return item;
       }
+      console.log(item, "itemitemitem");
       return { ...item, isSelect: !item.isSelect };
     });
+
+    console.log(newModels, "newModelnewModelsnewModelsnewModelss");
     seModelsData(newModels);
   };
   const onSave = () => {

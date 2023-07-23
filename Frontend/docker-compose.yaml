@@ -1,0 +1,13 @@
+services:
+  bluprint3d:
+    image: nginx:alpine
+    ports:
+      - 3004:80
+    volumes:
+      - ./blueprint3d/example/:/usr/share/nginx/html:ro
+  digihome-web:
+    build:
+      context: ./main-app
+      dockerfile: Dockerfile
+    ports:
+      - 3005:80

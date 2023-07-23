@@ -8,6 +8,7 @@ import useStyle from "./style";
 import OverlaySelect from "../OverlaySelect";
 
 export default function LibraryComponent({ items, onClick }: any) {
+  console.log(items, "itemsitemsitemsitemsitems");
   const classes = useStyle();
   return (
     <>

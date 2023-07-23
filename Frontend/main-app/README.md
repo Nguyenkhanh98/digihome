@@ -1,0 +1,62 @@
+# Project Name
+
+## Description
+
+Digihome react-app
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Installation
+
+1. Clone the repository:
+
+```
+   git clone https://github.com/Nguyenkhanh98/digihome.git
+
+```
+
+2. Navigate to the project directory:
+
+```
+   cd main-app
+
+```
+
+3. Install dependencies:
+
+```
+   yarn install:all
+
+```
+
+## Usage
+
+1. Start the application:
+
+```
+   yarn start:all
+
+```
+
+2. Open your web browser and visit [http://localhost:5173](http://localhost:5173) to see the app.
+   And visit [http://localhost:3003](http://localhost:3003) to see the blueprin app
+
+3. Or using docker-compose
+
+From root of 'FRONTEND'
+
+```
+   docker-compose up --build
+
+```
+
+## Features
+
+## Technologies Used

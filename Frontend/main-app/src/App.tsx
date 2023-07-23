@@ -1,5 +1,6 @@
 import { Suspense, useState } from "react";
 import Routes from "@/routes";
+if (typeof window.global === "undefined") window.global = window;
 
 function App() {
   return (

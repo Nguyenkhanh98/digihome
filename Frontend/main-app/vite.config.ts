@@ -9,8 +9,8 @@ export default defineConfig({
     alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
     extensions: [".js", ".jsx", ".ts", ".tsx"],
   },
-  define: {
-    global: {},
-  },
+  // define: {
+  //   global: "window",
+  // },
   mode: "development",
 });

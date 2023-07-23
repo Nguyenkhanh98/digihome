@@ -10,6 +10,7 @@ import theme from "./theme";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "react-toastify/dist/ReactToastify.css";
 // import { ThemeProvider } from "@material-ui/styles";
+if (typeof window.global === "undefined") window.global = window;
 
 const queryClient = new QueryClient({
   defaultOptions: {
