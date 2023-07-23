@@ -19,7 +19,11 @@ import { useEventBus } from "@/hooks/useEventBus";
 import { useReadCachAppContext } from "@/caches/reads/appContext";
 import { useWriteCacheAppContext } from "@/caches/writes/appContext";
 import SaveDesignComponent from "@/component/SaveDesign";
-
+import { useQueryTemplate } from "@/operations/queries/template";
+import { useMutationDesignCreate } from "@/operations/mutations/design";
+import { toast } from "react-toastify";
+import { upLoadFile } from "@/services/aws/s3";
+import { useQueryDesign } from "@/operations/queries/design";
 const eventBus = new EventBus(Env.MICRO_FRONTEND_URL.DESIGN_BOARD);
 
 export function DesignBoardContainer() {
@@ -31,6 +35,9 @@ export function DesignBoardContainer() {
   const iframeRef: any = useRef(null);
   const appContext = useReadCachAppContext();
   const updateAppContext = useWriteCacheAppContext();
+  const { mutate } = useMutationDesignCreate();
+  const { data: templates } = useQueryTemplate();
+  const { data: designs, refetch } = useQueryDesign();
 
   const handleIframeLoad = () => {
     setIsLoadingIframe(false);
@@ -44,12 +51,9 @@ export function DesignBoardContainer() {
     };
 
     const callBackSaveDesign = (data: any) => {
-      console.log("TTTTTTTTTTTTTTTTTT", data);
       setdialogSave(true);
-      // updateAppContext({ popupDesignBoard: true });
 
       setCurrentSaveDesign(data);
-      // updateAppContext({ popupDesignBoard: true });
     };
 
     const callBackReturnPrevious = () => {
@@ -75,7 +79,7 @@ export function DesignBoardContainer() {
   const sendDataToIframe = () => {
     if (eventBus.getInstance()) {
       const data = {
-        message: "Hello from the parent component!!!!",
+        templates: templates?.data,
         action: EACTION.INIT_FRAME,
       };
       eventBus.emit(EACTION.INIT_FRAME, data, iframeRef.current?.contentWindow);
@@ -107,6 +111,60 @@ export function DesignBoardContainer() {
     setdialogSave(false);
   };
 
+  const onSaveDesign = async ({ name }) => {
+    onCloseDialogSave();
+    updateAppContext({ backdrop: true });
+    const imgName = `${name}_${new Date().getTime()}.ipg`;
+    try {
+      const uploadFile = await upLoadFile(
+        dataURLtoFile(currentSaveDesign.thumbnail, name),
+        imgName
+      );
+      mutate(
+        {
+          name,
+          thumbnail: uploadFile.Location,
+          data: currentSaveDesign.data,
+        },
+        {
+          onError: () => {
+            toast.error("Some thing occurred. Please try again");
+          },
+          onSuccess: () => {
+            toast.success("Save design success");
+          },
+          onSettled: () => {
+            refetch();
+            updateAppContext({ backdrop: false });
+          },
+        }
+      );
+    } catch (error) {
+      toast.error("Some thing occurred. Please try again");
+      updateAppContext({ backdrop: false });
+    }
+  };
+
+  const onSelectDesign = (item) => {
+    console.log(item, "itemitemitemitem");
+
+    const data = {
+      message: "Load Design",
+      action: EACTION_TO_CLIENT.LOAD_DESIGN_CLIENT,
+      data: item.data,
+    };
+    eventBus.emit(
+      EACTION_TO_CLIENT.LOAD_DESIGN_CLIENT,
+      { data },
+      iframeRef.current?.contentWindow
+    );
+    onCloseDialog();
+  };
+
+  const designesFormat = designs?.map((design: any) => {
+    return { ...design, image: design.thumbnail, title: design.name };
+  });
+
   return (
     <>
       <DesignBoardComponent onLoad={handleIframeLoad} iframeRef={iframeRef} />
@@ -122,7 +180,11 @@ export function DesignBoardContainer() {
           },
         }}
       >
-        <UploadDesign onSelect={onSelect} />
+        <UploadDesign
+          onSelect={onSelect}
+          designs={designesFormat}
+          onSelectDesign={onSelectDesign}
+        />
       </Dialog>
 
       <Dialog
@@ -138,7 +200,7 @@ export function DesignBoardContainer() {
         }}
       >
         <SaveDesignComponent
-          onSelect={onSelect}
+          onCreate={onSaveDesign}
           thumbnail={currentSaveDesign?.thumbnail}
         />
       </Dialog>
@@ -147,3 +209,17 @@ export function DesignBoardContainer() {
 }
 
 export default DesignBoardContainer;
+
+function dataURLtoFile(dataURL, filename) {
+  const arr = dataURL.split(",");
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+
+  return new File([u8arr], filename, { type: mime });
+}

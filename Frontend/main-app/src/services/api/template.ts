@@ -1,5 +1,6 @@
 import { makeRequest } from "@/configs";
 import { Config } from "@/configs";
+import { ITemplateAPI, TAPIResponse } from "@/operations/types";
 
 export const create = async (payload: any) => {
   return makeRequest.API({
@@ -30,9 +31,10 @@ export const getById = (id: string) => {
       url: `${Config.API_DATA.TEMPLATE_ENDPOINT}/${id}`,
     });
 };
-export const getAll = () => {
-  return makeRequest.API({
+export const getAll = async (): Promise<TAPIResponse<ITemplateAPI[]>> => {
+  const result = await makeRequest.API({
     method: "GET",
     url: Config.API_DATA.TEMPLATE_ENDPOINT,
   });
+  return { data: result.data, status: result.status };
 };

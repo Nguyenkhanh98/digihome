@@ -7,7 +7,11 @@ import TabPanel from "@mui/lab/TabPanel";
 import LibraryComponent from "./Library";
 
 import FileUploadButton from "../FileUploadButton";
-export default function UploadDesign({ onSelect }: any) {
+export default function UploadDesign({
+  onSelect,
+  designs,
+  onSelectDesign,
+}: any) {
   const [value, setValue] = React.useState("Device");
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -32,7 +36,7 @@ export default function UploadDesign({ onSelect }: any) {
           <FileUploadButton onSelectFile={onSelect} />
         </TabPanel>
         <TabPanel value="Library">
-          <LibraryComponent />
+          <LibraryComponent items={designs} onClick={onSelectDesign} />
         </TabPanel>
       </TabContext>
     </Box>

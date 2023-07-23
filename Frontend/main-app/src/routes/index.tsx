@@ -20,6 +20,8 @@ import DesignBoardPage from "@/pages/DesignBoard";
 import { localStorageAPI } from "@/services/webapi/storage";
 import { useWriteCacheAppContext } from "@/caches/writes/appContext";
 import { LOCAL_STORAGE } from "@/configs/storage";
+import { TemplateContainer } from "@/containters/TemplateContainer";
+import TemplatePage from "@/pages/PageTemplate";
 // import Maintenance from 'pages/Maintenance';
 
 const isSetTimeOut = false;
@@ -88,6 +90,10 @@ const RouterApp = (props: any) => {
                 {
                   path: "design-board",
                   element: <DesignBoardPage />,
+                },
+                {
+                  path: "template",
+                  element: <TemplatePage />,
                 },
               ],
             },

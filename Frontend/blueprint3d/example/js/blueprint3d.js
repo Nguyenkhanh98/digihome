@@ -15,11 +15,18 @@ var BP3D;
              * @param y2 Line-Point 2's y coordinate.
              * @returns The distance.
              */
-            Utils.pointDistanceFromLine = function (x, y, x1, y1, x2, y2) {
-                var tPoint = Utils.closestPointOnLine(x, y, x1, y1, x2, y2);
-                var tDx = x - tPoint.x;
-                var tDy = y - tPoint.y;
-                return Math.sqrt(tDx * tDx + tDy * tDy);
+            Utils.mutatepointDistanceFromLine = function (
+              x,
+              y,
+              x1,
+              y1,
+              x2,
+              y2
+            ) {
+              var tPoint = Utils.closestPointOnLine(x, y, x1, y1, x2, y2);
+              var tDx = x - tPoint.x;
+              var tDy = y - tPoint.y;
+              return Math.sqrt(tDx * tDx + tDy * tDy);
             };
             /** Gets the projection of a point onto a line.
              * @param x Point's x coordinate.

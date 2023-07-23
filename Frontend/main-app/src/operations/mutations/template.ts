@@ -1,7 +1,8 @@
 import { templateAPIService } from "@/services/api";
 
-async function createTemplateMutation(model: any) {
-  return templateAPIService.create(model);
+async function useMutationCreateTemplate(model: any) {
+  const result = await templateAPIService.create(model);
+  return result.data;
 }
 
 async function updateTemplateMutation(id: string, model: any) {
@@ -13,7 +14,7 @@ async function deleteTemplateMutaiion(id: string) {
 }
 
 export {
-  createTemplateMutation,
+  useMutationCreateTemplate,
   updateTemplateMutation,
   deleteTemplateMutaiion,
 };

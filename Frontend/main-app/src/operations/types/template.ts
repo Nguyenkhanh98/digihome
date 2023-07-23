@@ -5,3 +5,9 @@ export interface ITemplateAPI {
   metadata: string;
   status: string;
 }
+
+export interface CreateTemplateAPI {
+  name: string;
+  thumbnail: string;
+  metadata: string;
+}

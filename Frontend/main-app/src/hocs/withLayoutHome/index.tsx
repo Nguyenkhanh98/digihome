@@ -7,10 +7,9 @@ export function withMainLayout(
   metadata: any = null
 ) {
   return (props: any) => {
-
     return (
       <div>
-        <HeaderContainer />
+        <HeaderContainer metadata={metadata} />
         <WrappedComponent {...props} />
         <FooterComponent />
       </div>

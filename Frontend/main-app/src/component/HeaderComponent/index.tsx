@@ -9,10 +9,12 @@ import { Box } from "@mui/material";
 interface IHeaderProps {
   appContext: TAppContext;
   logout: any;
+  isHideBG?: boolean;
 }
 export const HeaderComponent: React.FC<IHeaderProps> = ({
   logout,
   appContext,
+  isHideBG = false,
 }) => {
   const classes = useHeaderStyle();
   const injectLang = useInjectLang();
@@ -41,9 +43,16 @@ export const HeaderComponent: React.FC<IHeaderProps> = ({
   const AuthContent = () => {
     return (
       <>
-        <Box>
-          <div>Template</div>
-        </Box>
+        {profile?.role === "SUPER_ADMIN" && (
+          <Box>
+            <div
+              className={classes.loginButton}
+              onClick={() => navigate(injectLang("template"))}
+            >
+              Template
+            </div>
+          </Box>
+        )}
         <div className={classes.loginButton}>
           {`${profile?.firstName || ""} ${profile?.lastName || ""}`}
         </div>
@@ -55,8 +64,15 @@ export const HeaderComponent: React.FC<IHeaderProps> = ({
   };
 
   return (
-    <header id="header">
-      <div className="header-top">
+    <header
+      id="header"
+      style={
+        isHideBG
+          ? { backgroundColor: "rgba(34,34,34,0.9)", position: "relative" }
+          : {}
+      }
+    >
+      <div className={`header-top `}>
         <div className="container">
           <div className="row">
             <div className="col-lg-6 col-sm-6 col-4 header-top-left no-padding">
@@ -77,7 +93,10 @@ export const HeaderComponent: React.FC<IHeaderProps> = ({
       <div className="container main-menu">
         <div className="row align-items-center justify-content-between d-flex">
           <div id="logo">
-            <a href="index.html" style={{ color: "white", fontWeight: "bold" }}>
+            <div
+              style={{ color: "white", fontWeight: "bold" }}
+              onClick={() => navigate(injectLang(""))}
+            >
               <img
                 src={LogoMitsubishi}
                 width="50px"
@@ -86,7 +105,7 @@ export const HeaderComponent: React.FC<IHeaderProps> = ({
                 title=""
               />
               Digi home
-            </a>
+            </div>
           </div>
           <nav id="nav-menu-container">
             <ul className="nav-menu">

@@ -4,7 +4,7 @@ import { useWriteCacheAppContext } from "@/caches/writes/appContext";
 import { logoutAction } from "@/pages/PageSignin/helper";
 import { toast } from "react-toastify";
 
-export function HeaderContainer() {
+export function HeaderContainer({ metadata }: any) {
   const appContext = useReadCachAppContext();
   const updateAppContext = useWriteCacheAppContext();
   const logout = () => {
@@ -14,7 +14,11 @@ export function HeaderContainer() {
   };
   return (
     <>
-      <HeaderComponent appContext={appContext} logout={logout} />
+      <HeaderComponent
+        appContext={appContext}
+        logout={logout}
+        isHideBG={metadata.isHiddenPG}
+      />
     </>
   );
 }

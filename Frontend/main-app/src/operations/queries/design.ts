@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { designAPIService } from "@/services/api";
 import { VAR_DESIGN_API, VAR_DESIGN_API_BY_ID } from "../vars";
 
-export function useDesignAPIQuery(options = {}) {
+export function useQueryDesign(options: any = {}) {
   return useQuery([VAR_DESIGN_API], designAPIService.getAll, options);
 }
 

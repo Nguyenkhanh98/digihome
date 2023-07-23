@@ -1,5 +1,7 @@
 import axios from "axios";
 import { Config } from "./";
+import { localStorageAPI } from "@/services/webapi/storage";
+import { LOCAL_STORAGE } from "./storage";
 
 let CMSAPIInstance: any;
 let APIInstance: any;
@@ -7,9 +9,9 @@ let APIInstance: any;
 function createCMSAPIInstance() {
   if (!CMSAPIInstance) {
     CMSAPIInstance = axios.create({
-      baseURL: Config.CMS_API_DATA.URL, // Set a base URL for all requests
+      baseURL: Config.CMS_API_DATA.URL,
       headers: {
-        "Content-Type": "application/json", // Set default headers
+        "Content-Type": "application/json",
       },
       timeout: 8 * 1000,
     });
@@ -20,28 +22,29 @@ function createCMSAPIInstance() {
 function createAPIInstance() {
   if (!APIInstance) {
     APIInstance = axios.create({
-      baseURL: Config.API_DATA.URL, // Set a base URL for all requests
+      baseURL: Config.API_DATA.URL,
       headers: {
-        "Content-Type": "application/json", // Set default headers
+        "Content-Type": "application/json",
       },
       timeout: 8 * 1000,
     });
+
+    APIInstance.interceptors.request.use(
+      (config) => {
+        // Modify request config here (e.g., adding headers, tokens, etc.)
+        const token = localStorageAPI.getItem(LOCAL_STORAGE.TOKEN);
+        config.headers["Authorization"] = `Bearer ${token}`;
+        return config;
+      },
+      (error) => {
+        // Handle request error here
+        console.error("Request Interceptor Error:", error);
+        return Promise.reject(error);
+      }
+    );
   }
   return APIInstance;
 }
-
-// APIInstance.interceptors.request.use(
-//   (config) => {
-//     // Modify request config here (e.g., adding headers, tokens, etc.)
-//     console.log("Request Interceptor:", config);
-//     return config;
-//   },
-//   (error) => {
-//     // Handle request error here
-//     console.error("Request Interceptor Error:", error);
-//     return Promise.reject(error);
-//   }
-// );
 
 // Response interceptor
 // CMSAPIInstance.interceptors.response.use(

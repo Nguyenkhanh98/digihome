@@ -155,8 +155,9 @@ $(document).ready(function() {
         } else {
             $('#header').removeClass('header-scrolled');
         }
-    });
 
+    });
+         
     //------- Owl Carusel  js --------//  
 
     $('.active-testimonial-carusel').owlCarousel({

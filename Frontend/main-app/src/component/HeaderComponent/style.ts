@@ -6,7 +6,7 @@ const useStyle: any = makeStyles(
     loginButton: {
       color: "white",
       fontWeight: "bold",
-      fontSize: "16px",
+      fontSize: "14px",
       cursor: "pointer",
     },
     authCom: {

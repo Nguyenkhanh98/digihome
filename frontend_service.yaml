@@ -9,7 +9,7 @@ Parameters:
   SourceCodeBucketName:
     Type: String
     Description: S3 bucket name to store the source code
-    Default: digihomeFE
+    Default: digihome
   CloudFrontDistributionDomain:
     Type: String
     Description: Domain name for CloudFront distribution

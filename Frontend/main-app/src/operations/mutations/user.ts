@@ -1,11 +1,8 @@
 import { userAPIService } from "@/services/api";
 import { IUserLoginResponse } from "../types/user";
+import { TAPIResponse } from "../types";
 
-interface IAPIResponse<T> {
-  data: T;
-  status: number;
-}
-type ISignInsponse = IAPIResponse<IUserLoginResponse>;
+type ISignInsponse = TAPIResponse<IUserLoginResponse>;
 
 async function userSignupMutation(user: any) {
   return userAPIService.register(user);

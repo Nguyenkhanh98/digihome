@@ -1,12 +1,15 @@
 import { makeRequest } from "@/configs";
 import { Config } from "@/configs";
 
-export const create = async (payload: any) => {
-  return makeRequest.API({
-    method: "POST",
-    url: Config.API_DATA.DESIGN_ENDPOINT,
-    data: payload,
-  });
+export const create = () => {
+  return async (payload: any) => {
+    const result = await makeRequest.API({
+      method: "POST",
+      url: Config.API_DATA.DESIGN_ENDPOINT,
+      data: payload,
+    });
+    return { data: result.data, status: result.status };
+  };
 };
 export const updateById = (id: string, payload: any) => {
   return async () =>
@@ -30,9 +33,10 @@ export const getById = (id: string) => {
       url: `${Config.API_DATA.DESIGN_ENDPOINT}/${id}`,
     });
 };
-export const getAll = () => {
-  return makeRequest.API({
+export const getAll = async () => {
+  const result = await makeRequest.API({
     method: "GET",
     url: Config.API_DATA.DESIGN_ENDPOINT,
   });
+  return result.data;
 };

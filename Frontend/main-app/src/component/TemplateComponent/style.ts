@@ -13,6 +13,11 @@ const templateStyle = makeStyles(
       },
     },
     button: {},
+    diglogAction: {
+      display: "flex",
+      justifyContent: "space-between",
+      margin: 10,
+    },
   }),
   { name: "TemplateStyle" }
 );
