@@ -57,6 +57,20 @@ From root of 'FRONTEND'
 
 ```
 
+## Project Structure
+
+The project follows a standard NestJS project structure with directories organized for controllers, services, modules, and other components.
+
+- `src`: Contains the main source code of the NestJS application.
+- `component`: View
+- `container`: Biz logic
+- `operations`: Operation (command, query)
+- `caches`: Cache CQR (read, write)
+- `services`: Include internal and external services.
+- `hooks`: Custom hook
+- `routes`: Router of application
+- `configs`: Contains configuration files, such as environment variables.
+
 ## Features
 
 ## Technologies Used
