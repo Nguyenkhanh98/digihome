@@ -38,6 +38,10 @@ Digihome react-app
 
 ## Usage
 
+please check blueprint/example/js/eventBus for targetOrigin is react app domain
+
+And config VITE_DESIGN_BOARD_URL in env for react_app for targetOrigin is bluperint app
+
 1. Start the application:
 
 ```
