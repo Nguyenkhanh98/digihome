@@ -79,5 +79,5 @@ export class EventBus {
 // Example usage:
 
 const targetOrigin = "http://127.0.0.1:3003";
-const eventBus = new EventBus(targetOrigin);
+const eventBus = new EventBus(Env.MICRO_FRONTEND_URL.DESIGN_BOARD);
 eventBus.init();

@@ -17,10 +17,6 @@ logs/
 # Compiled TypeScript files
 # *.js.map
 
-# Docker
-Dockerfile
-.dockerignore
-
 # Nest specific
 nest-cli.json
 
@@ -66,9 +62,6 @@ package-lock.json
 # *.js
 # *.js.map
 
-# Docker
-Dockerfile
-.dockerignore
 
 # React specific
 .env.local
