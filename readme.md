@@ -6,7 +6,7 @@ This may be come from react-router-dom lastest version with vite build.
 
 I have open issues here
 
-https://github.com/remix-run/react-router/issues/10729(#https://github.com/remix-run/react-router/issues/10729)
+[https://github.com/remix-run/react-router/issues/10729](https://github.com/remix-run/react-router/issues/10729)
 
 ## Project Structure
 
