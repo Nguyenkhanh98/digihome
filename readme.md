@@ -8,6 +8,8 @@ I have open issues here and still do TShoot
 
 [https://github.com/remix-run/react-router/issues/10729](https://github.com/remix-run/react-router/issues/10729)
 
+\*\* Update: I've use hashRouter(includes # in url) for short-term.
+
 ## Project Structure
 
 - `Frontend`: Content Frontend react app and bluprint app

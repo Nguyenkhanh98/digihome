@@ -12,7 +12,7 @@ export default defineConfig({
     },
     extensions: [".js", ".jsx", ".ts", ".tsx"],
   },
-  mode: "developments",
+  mode: "production",
   build: {
     outDir: "dist",
     sourcemap: true,

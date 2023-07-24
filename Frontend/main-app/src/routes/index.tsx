@@ -3,6 +3,7 @@ import {
   Route,
   Routes,
   createBrowserRouter,
+  createHashRouter,
   RouterProvider,
 } from "react-router-dom";
 
@@ -44,7 +45,7 @@ const RouterApp = (props: any) => {
     }
   }, []);
 
-  const appRouter = createBrowserRouter([
+  const appRouter = createHashRouter([
     {
       path: "/",
       element: <RootRoute />,
