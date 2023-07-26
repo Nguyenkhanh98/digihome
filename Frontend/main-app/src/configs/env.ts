@@ -18,9 +18,6 @@ export default {
   },
   S3: {
     AWS_REGION: env.VITE_S3_AWS_REGION || "ap-southest-1",
-    AWS_ACCESS_KEY_ID: env.VITE_S3_AWS_ACCESS_KEY_ID || "AKIA6MYXY65W4GOXBI6A",
-    AWS_SECRET_ACCESS_KEY:
-      env.VITE_S3_AWS_SECRET_ACCESS_KEY ||
-      "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",
+    AWS_ACCESS_KEY_ID: env.VITE_S3_AWS_ACCESS_KEY_ID ||''
   },
 };
