@@ -1,7 +1,7 @@
 
-*** Frontend: React, typescript, react-query
-*** Backend : Nestjs
-*** Ops : AWS
+ * Frontend: React, typescript, react-query 
+ * Backend : Nestjs
+ * Ops : AWS
 ## Project Structure
 
 - `Frontend`: Content Frontend react app and bluprint app
